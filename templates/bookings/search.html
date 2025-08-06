@@ -1,0 +1,231 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}البحث في الحجوزات{% endblock %}
+
+{% block content %}
+<style>
+    .search-header {
+        background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+        color: white;
+        padding: 60px 0;
+        text-align: center;
+    }
+
+    .search-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+
+    .filter-section {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 25px;
+        margin-bottom: 30px;
+    }
+
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .status-pending { background-color: #fff3cd; color: #856404; }
+    .status-confirmed { background-color: #d1edff; color: #0c5460; }
+    .status-completed { background-color: #d4edda; color: #155724; }
+    .status-cancelled { background-color: #f8d7da; color: #721c24; }
+    .status-no_show { background-color: #e2e3e5; color: #495057; }
+
+    .results-summary {
+        background: #e3f2fd;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-left: 4px solid #2196f3;
+    }
+</style>
+
+<div class="search-header">
+    <div class="container">
+        <h1>البحث في الحجوزات</h1>
+        <p>البحث والتصفية المتقدمة في جميع حجوزاتك</p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <!-- نموذج البحث والتصفية -->
+    <div class="filter-section">
+        <h4 class="mb-4">
+            <i class="fas fa-filter"></i> تصفية النتائج
+        </h4>
+        
+        <form method="get" id="searchForm">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">حالة الحجز</label>
+                        <select name="status" class="form-control">
+                            <option value="">جميع الحالات</option>
+                            <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>في الانتظار</option>
+                            <option value="confirmed" {% if request.GET.status == 'confirmed' %}selected{% endif %}>مؤكد</option>
+                            <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>مكتمل</option>
+                            <option value="cancelled" {% if request.GET.status == 'cancelled' %}selected{% endif %}>ملغي</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">من تاريخ</label>
+                        <input type="date" name="date_from" class="form-control" value="{{ request.GET.date_from }}">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">إلى تاريخ</label>
+                        <input type="date" name="date_to" class="form-control" value="{{ request.GET.date_to }}">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">اسم العميل</label>
+                        <input type="text" name="customer_name" class="form-control" 
+                               placeholder="ابحث باسم العميل" value="{{ request.GET.customer_name }}">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary me-2">
+                    <i class="fas fa-search"></i> بحث
+                </button>
+                <a href="{% url 'bookings:search' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-refresh"></i> إعادة تعيين
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- ملخص النتائج -->
+    {% if request.GET %}
+        <div class="results-summary">
+            <h5 class="mb-0">
+                <i class="fas fa-info-circle"></i>
+                تم العثور على {{ bookings|length }} حجز
+                {% if request.GET.status %}
+                    - الحالة: <strong>{{ request.GET.status }}</strong>
+                {% endif %}
+                {% if request.GET.customer_name %}
+                    - العميل: <strong>{{ request.GET.customer_name }}</strong>
+                {% endif %}
+            </h5>
+        </div>
+    {% endif %}
+
+    <!-- نتائج البحث -->
+    <div class="search-card">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3>نتائج البحث</h3>
+            {% if bookings %}
+                <span class="badge bg-secondary">{{ bookings|length }} حجز</span>
+            {% endif %}
+        </div>
+
+        {% if bookings %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>العميل</th>
+                            <th>المحل</th>
+                            <th>الخدمة</th>
+                            <th>التاريخ</th>
+                            <th>الوقت</th>
+                            <th>السعر</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                            <tr>
+                                <td>
+                                    <div>
+                                        <strong>
+                                            {% if booking.customer %}
+                                                {{ booking.customer.get_full_name|default:booking.customer.username }}
+                                            {% else %}
+                                                {{ booking.customer_name }}
+                                            {% endif %}
+                                        </strong>
+                                        <br>
+                                        <small class="text-muted">
+                                            {% if booking.customer %}
+                                                {{ booking.customer.phone_number|default:"غير محدد" }}
+                                            {% else %}
+                                                {{ booking.customer_phone }}
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                </td>
+                                <td>{{ booking.barbershop.name }}</td>
+                                <td>
+                                    {{ booking.service.name }}
+                                    <br>
+                                    <small class="text-muted">{{ booking.service.duration }} دقيقة</small>
+                                </td>
+                                <td>{{ booking.booking_date|date:"d/m/Y" }}</td>
+                                <td>{{ booking.booking_time|time:"H:i" }}</td>
+                                <td><strong>{{ booking.total_price }} جنيه</strong></td>
+                                <td>
+                                    <span class="status-badge status-{{ booking.status }}">
+                                        {{ booking.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{% url 'bookings:merchant_detail' booking.pk %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{% url 'bookings:update_status' booking.pk %}" class="btn btn-sm btn-outline-success">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-search" style="font-size: 4rem; color: #ddd; margin-bottom: 20px;"></i>
+                {% if request.GET %}
+                    <h4>لم يتم العثور على نتائج</h4>
+                    <p class="text-muted">جرب تغيير معايير البحث</p>
+                {% else %}
+                    <h4>ابدأ البحث</h4>
+                    <p class="text-muted">استخدم النموذج أعلاه للبحث في الحجوزات</p>
+                {% endif %}
+                <a href="{% url 'accounts:dashboard' %}" class="btn btn-primary">
+                    <i class="fas fa-list"></i> عرض جميع الحجوزات
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // تحديث تلقائي للنموذج عند تغيير الخيارات
+    $('select[name="status"]').change(function() {
+        if ($(this).val()) {
+            $('#searchForm').submit();
+        }
+    });
+});
+</script>
+{% endblock %}

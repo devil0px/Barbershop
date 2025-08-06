@@ -1,0 +1,169 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}محادثة الحجز #{{ booking.id }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/bookings.css' %}">
+<style>
+    .chat-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .chat-header h4 {
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 20px;
+        text-align: center;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+    }
+    .chat-messages {
+        height: 400px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin-bottom: 15px;
+        background-color: #f9f9f9;
+        border-radius: 5px;
+    }
+    .message {
+        margin-bottom: 15px;
+        padding: 10px 15px;
+        border-radius: 20px;
+        max-width: 75%;
+        word-wrap: break-word;
+    }
+    .message.sent {
+        background-color: #0d6efd;
+        color: white;
+        margin-left: auto;
+        border-bottom-right-radius: 5px;
+    }
+    .message.received {
+        background-color: #e9ecef;
+        color: #333;
+        margin-right: auto;
+        border-bottom-left-radius: 5px;
+    }
+    .message p {
+        margin-bottom: 0.25rem;
+    }
+    .message small {
+        font-size: 0.75rem;
+        opacity: 0.8;
+    }
+    .chat-form textarea {
+        resize: vertical;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="chat-container">
+        <div class="chat-header text-center">
+            <h4>محادثة بخصوص الحجز #{{ booking.id }}</h4>
+            <small id="chat-status" class="text-muted">جارٍ الاتصال...</small>
+        </div>
+        <div id="chat-log" class="chat-messages">
+            {% for msg in chat_messages %}
+                <div class="message {% if msg.sender == request.user %}sent{% else %}received{% endif %}">
+                    <p><strong>{{ msg.sender.username }}:</strong> {{ msg.message }}</p>
+                    <small class="text-muted">{{ msg.created_at|date:"d/m/Y H:i" }}</small>
+                </div>
+            {% empty %}
+                <p id="no-messages-yet" class="text-center text-muted">لا توجد رسائل بعد. كن أول من يبدأ المحادثة!</p>
+            {% endfor %}
+        </div>
+
+        <form id="chat-form" class="chat-form">
+            <textarea id="chat-message-input" class="form-control" rows="3" placeholder="اكتب رسالتك هنا..."></textarea>
+            <button id="chat-message-submit" type="submit" class="btn btn-primary mt-2 w-100">إرسال <i class="fas fa-paper-plane"></i></button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+/* eslint-disable */
+document.addEventListener('DOMContentLoaded', function() {
+        const bookingId = "{{ booking.id }}";
+        const chatLog = document.getElementById('chat-log');
+        const chatStatus = document.getElementById('chat-status');
+        const noMessagesP = document.getElementById('no-messages-yet');
+        const chatForm = document.getElementById('chat-form');
+        const messageInput = document.getElementById('chat-message-input');
+
+        // Scroll to the bottom of the chat log on page load
+        chatLog.scrollTop = chatLog.scrollHeight;
+
+        // Determine WebSocket protocol (ws or wss)
+        const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        const wsURL = `${wsProtocol}://${window.location.host}/ws/chat/${bookingId}/`;
+
+        const chatSocket = new WebSocket(wsURL);
+
+        chatSocket.onopen = function(e) {
+            console.log('WebSocket connection established.');
+            chatStatus.textContent = 'متصل';
+            chatStatus.style.color = 'green';
+        };
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            
+            // Hide the 'no messages yet' paragraph if it exists
+            if (noMessagesP) {
+                noMessagesP.style.display = 'none';
+            }
+
+            // Create message element
+            const messageElement = document.createElement('div');
+            const messageType = data.sender_username === '{{ request.user.username }}' ? 'sent' : 'received';
+            messageElement.className = `message ${messageType}`;
+
+            messageElement.innerHTML = `
+                <p><strong>${data.sender_username}:</strong> ${data.message}</p>
+                <small class="text-muted">${data.created_at}</small>
+            `;
+
+            chatLog.appendChild(messageElement);
+            // Scroll to the bottom
+            chatLog.scrollTop = chatLog.scrollHeight;
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+            chatStatus.textContent = 'غير متصل (خطأ)';
+            chatStatus.style.color = 'red';
+        };
+
+        chatSocket.onerror = function(err) {
+            console.error('WebSocket error observed:', err);
+            chatStatus.textContent = 'خطأ في الاتصال';
+            chatStatus.style.color = 'red';
+        };
+
+        chatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const message = messageInput.value.trim();
+            if (message) {
+                chatSocket.send(JSON.stringify({
+                    'message': message
+                }));
+                messageInput.value = ''; // Clear input field
+            }
+        });
+    });
+/* eslint-enable */
+</script>
+{% endblock %}
+
+
+

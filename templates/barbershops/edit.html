@@ -1,0 +1,218 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}تعديل {{ object.name }} - Barber Shop{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="form-header">
+    <div class="container">
+        <h1>تعديل {{ object.name }}</h1>
+        <p>تحديث معلومات محل الحلاقة</p>
+    </div>
+</div>
+
+<div class="form-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="form-container">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="id_name" class="form-label">
+                                    اسم المحل <span class="required">*</span>
+                                </label>
+                                <input type="text" name="name" id="id_name" class="form-control" value="{{ object.name }}" required>
+                                <div class="help-text">أدخل اسم محل الحلاقة</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="id_phone_number" class="form-label">
+                                    رقم الهاتف <span class="required">*</span>
+                                </label>
+                                <input type="tel" name="phone_number" id="id_phone_number" class="form-control" value="{{ object.phone_number }}" required>
+                                <div class="help-text">رقم الهاتف للتواصل مع العملاء</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_description" class="form-label">
+                            وصف المحل <span class="required">*</span>
+                        </label>
+                        <textarea name="description" id="id_description" class="form-control" rows="4" required>{{ object.description }}</textarea>
+                        <div class="help-text">اكتب وصفاً مختصراً عن محل الحلاقة والخدمات المقدمة</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_address" class="form-label">
+                            العنوان <span class="required">*</span>
+                        </label>
+                        <textarea name="address" id="id_address" class="form-control" rows="2" required>{{ object.address }}</textarea>
+                        <div class="help-text">العنوان الكامل لمحل الحلاقة</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_image" class="form-label">
+                            صورة المحل
+                        </label>
+                        {% if object.image %}
+                            <p>الصورة الحالية: <a href="{{ object.image.url }}" target="_blank">{{ object.image.name }}</a></p>
+                        {% endif %}
+                        {{ form.image }}
+                        <div class="help-text">ارفع صورة جديدة لتغيير الصورة الحالية</div>
+                    </div>
+
+                    <!-- Map Container -->
+                    <div class="form-group">
+                        <label class="form-label">تحديد الموقع على الخريطة <span class="required">*</span></label>
+                        <div id="map"></div>
+                        <div class="help-text">انقر على الخريطة أو اسحب العلامة لتحديد موقع المحل الدقيق.</div>
+                    </div>
+
+                    <!-- Hidden fields for latitude and longitude -->
+                    <input type="hidden" name="latitude" id="id_latitude" value="{{ object.latitude }}" required>
+                    <input type="hidden" name="longitude" id="id_longitude" value="{{ object.longitude }}" required>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="id_opening_time" class="form-label">
+                                    وقت الافتتاح <span class="required">*</span>
+                                </label>
+                                <input type="time" name="opening_time" id="id_opening_time" class="form-control" value="{{ object.opening_time|time:'H:i' }}" required>
+                                <div class="help-text">وقت بداية العمل اليومي</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="id_closing_time" class="form-label">
+                                    وقت الإغلاق <span class="required">*</span>
+                                </label>
+                                <input type="time" name="closing_time" id="id_closing_time" class="form-control" value="{{ object.closing_time|time:'H:i' }}" required>
+                                <div class="help-text">وقت انتهاء العمل اليومي</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn-submit">
+                            <i class="fas fa-save"></i>
+                            حفظ التغييرات
+                        </button>
+                        <a href="{% url 'barbershops:detail' object.pk %}" class="btn-cancel">
+                            <i class="fas fa-times"></i>
+                            إلغاء
+                        </a>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- معلومات إضافية -->
+<div class="container pb-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div style="background: #f8f9fa; border-radius: 15px; padding: 30px; text-align: center;">
+                <h4 style="color: #333; margin-bottom: 20px;">
+                    <i class="fas fa-lightbulb" style="color: #d4af37;"></i>
+                    نصائح للتحديث
+                </h4>
+                
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div style="background: white; border-radius: 10px; padding: 20px;">
+                            <i class="fas fa-image" style="font-size: 2rem; color: #28a745; margin-bottom: 10px;"></i>
+                            <h6>الصورة</h6>
+                            <p style="font-size: 0.9rem; color: #666; margin: 0;">
+                                استخدم صورة واضحة وجذابة تعكس جودة المحل
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div style="background: white; border-radius: 10px; padding: 20px;">
+                            <i class="fas fa-clock" style="font-size: 2rem; color: #007bff; margin-bottom: 10px;"></i>
+                            <h6>أوقات العمل</h6>
+                            <p style="font-size: 0.9rem; color: #666; margin: 0;">
+                                تأكد من دقة أوقات العمل لتجنب إزعاج العملاء
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-3">
+                        <div style="background: white; border-radius: 10px; padding: 20px;">
+                            <i class="fas fa-phone" style="font-size: 2rem; color: #d4af37; margin-bottom: 10px;"></i>
+                            <h6>رقم الهاتف</h6>
+                            <p style="font-size: 0.9rem; color: #666; margin: 0;">
+                                تأكد من صحة رقم الهاتف للتواصل السريع مع العملاء
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const latInput = document.getElementById('id_latitude');
+        const lonInput = document.getElementById('id_longitude');
+
+        // Fallback coordinates (Riyadh)
+        const defaultLat = 24.7136;
+        const defaultLon = 46.6753;
+
+        // Use existing coordinates if available, otherwise use fallback
+        const initialLat = parseFloat(latInput.value) || defaultLat;
+        const initialLon = parseFloat(lonInput.value) || defaultLon;
+
+        const map = L.map('map').setView([initialLat, initialLon], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        let marker = L.marker([initialLat, initialLon], { draggable: true }).addTo(map);
+
+        // Function to update marker and inputs
+        function updateMarker(lat, lng) {
+            marker.setLatLng([lat, lng]);
+            map.panTo([lat, lng]);
+            latInput.value = lat.toFixed(6);
+            lonInput.value = lng.toFixed(6);
+        }
+
+        // Update on map click
+        map.on('click', function (e) {
+            updateMarker(e.latlng.lat, e.latlng.lng);
+        });
+
+        // Update on marker drag
+        marker.on('dragend', function(e) {
+            const latlng = e.target.getLatLng();
+            updateMarker(latlng.lat, latlng.lng);
+        });
+
+
+    });
+</script>
+{% endblock %}

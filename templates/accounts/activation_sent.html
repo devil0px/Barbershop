@@ -1,0 +1,106 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}تم إرسال رابط التفعيل{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+<style>
+    .activation-card {
+        max-width: 500px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        padding: 40px;
+        text-align: center;
+    }
+    .activation-icon {
+        font-size: 4rem;
+        color: #28a745;
+        margin-bottom: 20px;
+    }
+    .activation-title {
+        color: #333;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+    .activation-text {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 30px;
+    }
+    .activation-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .btn-activation {
+        padding: 12px 25px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .btn-primary-activation {
+        background: #d4af37;
+        color: white;
+        border: 2px solid #d4af37;
+    }
+    .btn-primary-activation:hover {
+        background: #b8941f;
+        border-color: #b8941f;
+        color: white;
+    }
+    .btn-secondary-activation {
+        background: transparent;
+        color: #6c757d;
+        border: 2px solid #6c757d;
+    }
+    .btn-secondary-activation:hover {
+        background: #6c757d;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="activation-card">
+        <div class="activation-icon">
+            <i class="fas fa-envelope-circle-check"></i>
+        </div>
+        
+        <h2 class="activation-title">تم إرسال رابط التفعيل!</h2>
+        
+        <div class="activation-text">
+            <p>تم إرسال رابط تفعيل الحساب إلى بريدك الإلكتروني.</p>
+            <p>يرجى فحص صندوق الوارد (وصندوق الرسائل غير المرغوب ��يها) والنقر على رابط التفعيل.</p>
+            <p><strong>ملاحظة:</strong> رابط التفعيل صالح لمدة 24 ساعة فقط.</p>
+        </div>
+        
+        <div class="activation-actions">
+            <a href="{% url 'accounts:activate_code' %}" class="btn-activation btn-primary-activation">
+                <i class="fas fa-keyboard me-2"></i>
+                أدخل كود التفعيل
+            </a>
+            <a href="{% url 'accounts:resend_activation' %}" class="btn-activation btn-secondary-activation">
+                <i class="fas fa-redo me-2"></i>
+                إعادة الإرسال
+            </a>
+        </div>
+        
+        <div class="mt-4">
+            <p class="text-muted small">
+                <i class="fas fa-info-circle me-1"></i>
+                إذا لم تستلم الإيميل خلال بضع دقائق، تحقق من مجلد الرسائل غير المرغوب فيها
+            </p>
+        </div>
+        
+        <div class="auth-links mt-4">
+            <p><a href="{% url 'home:index' %}">العودة إلى الصفحة الرئيسية</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

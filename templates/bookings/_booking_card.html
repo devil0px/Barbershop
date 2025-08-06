@@ -1,0 +1,99 @@
+<div class="card booking-card">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <div class="d-flex align-items-center mb-1">
+                    {% if booking.booking_services.exists %}
+                        <h5 class="mb-0 me-3">
+                            {% if booking.booking_services.count == 1 %}
+                                {{ booking.booking_services.first.service.name }}
+                            {% else %}
+                                {{ booking.booking_services.count }} خدمات
+                            {% endif %}
+                        </h5>
+                    {% else %}
+                        <h5 class="mb-0 me-3">{{ booking.service.name }}</h5>
+                    {% endif %}
+                    {% if booking.customer == request.user %}
+                        <div class="ms-4">
+                            <span class="badge bg-warning text-dark px-3 py-2">
+                                <i class="fas fa-hashtag me-1"></i>
+                                دورك في الطابور: <b>#{{ booking.queue_number }}</b>
+                            </span>
+                        </div>
+                    {% endif %}
+                </div>
+                {% if booking.customer == request.user %}
+                    <small class="text-muted"><i class="fas fa-store me-1"></i> {{ booking.barbershop.name }}</small>
+                {% else %}
+                    <small class="text-muted"><i class="fas fa-user me-1"></i> 
+                        {% if booking.customer %}
+                            {{ booking.customer.username }}
+                        {% else %}
+                            {{ booking.customer_name }}
+                        {% endif %}
+                    </small>
+                {% endif %}
+            </div>
+            <span class="badge {{ booking.get_status_class }}">
+                {{ booking.get_status_display_arabic }}
+            </span>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6 mb-2">
+                <strong>التاريخ:</strong> 
+                {% if booking.booking_day %}
+                    {{ booking.booking_day|date:"d/m/Y" }}
+                {% else %}
+                    غير محدد
+                {% endif %}
+            </div>
+            <div class="col-md-6 mb-2">
+                <strong>السعر:</strong> {{ booking.total_price }} جنيه
+                {% if booking.booking_services.exists and booking.booking_services.count > 1 %}
+                    <small class="text-muted d-block">{{ booking.booking_services.count }} خدمات</small>
+                {% endif %}
+            </div>
+            <div class="col-12 mb-2">
+                <strong>تاريخ الإنشاء:</strong> {{ booking.created_at|date:"d/m/Y H:i" }}
+            </div>
+            {% if booking.notes %}
+            <div class="col-12 mb-2">
+                <strong>ملاحظات:</strong> {{ booking.notes }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card-footer">
+        <div class="d-flex justify-content-center flex-wrap">
+            <a href="{% url 'bookings:booking_chat' booking.id %}" class="btn btn-primary btn-sm m-1">
+                <i class="fas fa-comments me-1"></i> محادثة
+                {% if booking.unread_messages %}
+                    <span class="badge bg-danger ms-1">جديد</span>
+                {% endif %}
+            </a>
+            
+            {% if booking.customer == request.user %}
+                <a href="{% url 'bookings:detail' booking.id %}" class="btn btn-info btn-sm m-1">
+                    <i class="fas fa-info-circle me-1"></i> تفاصيل
+                </a>
+                {% if booking.status == 'pending' %}
+                    <button type="button" class="btn btn-warning btn-sm m-1" data-bs-toggle="modal" data-bs-target="#cancelBookingModal-{{ booking.id }}">
+                        <i class="fas fa-times-circle me-1"></i> إلغاء
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm m-1" data-bs-toggle="modal" data-bs-target="#deleteBookingModal-{{ booking.id }}">
+                        <i class="fas fa-trash me-1"></i> حذف
+                    </button>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'bookings:detail' booking.id %}" class="btn btn-info btn-sm m-1">
+                    <i class="fas fa-info-circle me-1"></i> تفاصيل
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,37 @@
+{% load notification_tags %}
+
+{% if notifications %}
+    {% for notification in notifications %}
+    <li>
+        <a class="dropdown-item {% if not notification.is_read %}bg-light{% endif %}" 
+           href="{% if notification.booking %}{% url 'bookings:booking_chat' notification.booking.id %}{% else %}{% url 'notifications:list' %}{% endif %}"
+           onclick="markNotificationRead({{ notification.id }})">
+            <div class="d-flex align-items-start">
+                <div class="me-3">
+                    <i class="{{ notification.get_icon }} {{ notification.get_color_class }}"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <div class="fw-bold small">{{ notification.title }}</div>
+                    <div class="text-muted small">
+                        {{ notification.message|truncatechars:50 }}
+                    </div>
+                    <div class="text-muted small">
+                        {{ notification.created_at|timesince }} مضت
+                    </div>
+                </div>
+                {% if not notification.is_read %}
+                <div class="ms-2">
+                    <span class="badge bg-primary rounded-pill">جديد</span>
+                </div>
+                {% endif %}
+            </div>
+        </a>
+    </li>
+    {% endfor %}
+{% else %}
+    <li>
+        <a class="dropdown-item text-center text-muted" href="#">
+            لا توجد إشعارات جديدة
+        </a>
+    </li>
+{% endif %}

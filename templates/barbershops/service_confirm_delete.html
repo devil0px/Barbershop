@@ -1,0 +1,31 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}تأكيد حذف الخدمة{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/confirmation.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="confirmation-container">
+    <div class="confirmation-box">
+        <div class="confirmation-icon">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h1>تأكيد الحذف</h1>
+        <p>
+            هل أنت متأكد أنك تريد حذف خدمة: <strong>{{ object.name }}</strong>؟
+            <br>
+            <small>لا يمكن التراجع عن هذا الإجراء.</small>
+        </p>
+        <form method="post">
+            {% csrf_token %}
+            <div class="confirmation-actions">
+                <button type="submit" class="btn-confirm-delete">نعم، قم بالحذف</button>
+                <a href="{% url 'barbershops:service_list' object.barbershop.pk %}" class="btn-cancel-action">إلغاء</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

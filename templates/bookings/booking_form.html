@@ -1,0 +1,349 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}حجز جديد - {{ barbershop.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .service-card {
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 0.75rem; /* Reduced padding */
+        margin-bottom: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        background-color: #fff;
+    }
+
+    .service-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.07); /* Softer shadow */
+    }
+
+    .service-card.selected {
+        border-color: #007bff; /* Primary color for selection */
+        background-color: #f8f9fa; /* Light background on selection */
+        box-shadow: 0 8px 20px rgba(0, 123, 255, 0.15);
+    }
+
+
+
+    .total-summary {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+
+    .selected-services-list {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .service-card img {
+        width: 100%;
+        height: 120px; /* Reduced height */
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 0.75rem; /* Reduced margin */
+    }
+
+    .service-card h5 {
+        margin-bottom: 0.25rem;
+        font-size: 1rem; /* Reduced font size */
+        font-weight: 600;
+        color: #343a40;
+    }
+
+    .service-card .price {
+        font-weight: 700;
+        color: #28a745;
+        font-size: 1.1rem; /* Reduced font size */
+        margin-bottom: 0.25rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">حجز جديد في: {{ barbershop.name }}</h3>
+            <div class="d-flex align-items-center">
+                {% if current_turn_number > 0 %}
+                    <span class="badge bg-success text-white p-2 me-3">
+                        <i class="fas fa-ticket-alt me-1"></i> الدور الحالي: #{{ current_turn_number }}
+                    </span>
+                {% endif %}
+                <a href="{{ barbershop.get_absolute_url }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> العودة للمحل
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <form method="post" id="bookingForm" novalidate>
+                {% csrf_token %}
+
+                <!-- Hidden fields for services and barbershop -->
+                {{ form.selected_services }}
+                {{ form.barbershop }}
+
+                <div class="mb-4">
+                    <h4 class="mb-3"><span class="badge bg-primary me-2">1</span>اختر الخدمات المطلوبة</h4>
+                    <div class="row">
+                        {% for service in services %}
+                        <div class="col-md-3 col-sm-6">
+                            <div class="service-card" data-service-id="{{ service.id }}" data-service-price="{{ service.price }}" data-service-duration="{{ service.duration }}" data-service-name="{{ service.name }}">
+                                {% if service.image %}
+                                    <img src="{{ service.image.url }}" alt="{{ service.name }}">
+                                {% else %}
+                                    <img src="{% static 'images/default-service.png' %}" alt="صورة افتراضية">
+                                {% endif %}
+                                <h5>{{ service.name }}</h5>
+                                <p class="price">{{ service.price }} جنيه</p>
+                                <small class="text-muted"><i class="far fa-clock"></i> {{ service.duration }} دقيقة</small>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col">
+                            <p class="text-center text-muted">لا توجد خدمات متاحة في هذا المحل حالياً.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Selected Services Summary -->
+                    <div class="total-summary" id="selectedServicesSummary" style="display: none;">
+                        <h5 class="mb-3"><i class="fas fa-list-check me-2"></i>الخدمات المختارة</h5>
+                        <div class="selected-services-list" id="selectedServicesList"></div>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong>إجمالي السعر: <span id="totalPrice" class="text-success">0</span> جنيه</strong>
+                            </div>
+                            <div class="col-md-4">
+                                <strong>إجمالي المدة: <span id="totalDuration" class="text-info">0</span> دقيقة</strong>
+                            </div>
+                            <div class="col-md-4">
+                                <strong>عدد الخدمات: <span id="totalServices" class="text-primary">0</span></strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="mb-4">
+                    <h4 class="mb-3"><span class="badge bg-primary me-2">2</span>أدخل بيانات الحجز</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form.booking_day.label_tag }}
+                                {{ form.booking_day }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form.notes.label_tag }}
+                                {{ form.notes }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% if not user.is_authenticated %}
+                <hr class="my-4">
+                <div class="mb-4">
+                    <h4 class="mb-3"><span class="badge bg-primary me-2">3</span>أدخل بياناتك</h4>
+                     <div class="row">
+                        <div class="col-md-4">{{ form.customer_name.label_tag }}{{ form.customer_name }}</div>
+                        <div class="col-md-4">{{ form.customer_phone.label_tag }}{{ form.customer_phone }}</div>
+                        <div class="col-md-4">{{ form.customer_email.label_tag }}{{ form.customer_email }}</div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="d-flex justify-content-end mt-4">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="fas fa-check"></i> إتمام الحجز
+                    </button>
+                </div>
+            </form>
+            {{ barbershop.id|json_script:"barbershop-id" }}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const serviceCards = document.querySelectorAll('.service-card');
+    const servicesInput = document.querySelector('#id_selected_services');
+    const barbershopInput = document.querySelector('#id_barbershop');
+    const selectedServicesSummary = document.getElementById('selectedServicesSummary');
+    const selectedServicesList = document.getElementById('selectedServicesList');
+    const totalPriceElement = document.getElementById('totalPrice');
+    const totalDurationElement = document.getElementById('totalDuration');
+    const totalServicesElement = document.getElementById('totalServices');
+    
+    // Safely get data from the template
+    const barbershopId = JSON.parse(document.getElementById('barbershop-id').textContent);
+    
+    // Track selected services with quantities
+    let selectedServices = {};
+
+    // Set the barbershop ID in the hidden form field
+    if (barbershopInput && barbershopId) {
+        barbershopInput.value = barbershopId;
+    }
+
+    // Handle service card clicks
+    serviceCards.forEach(card => {
+        card.addEventListener('click', function(e) {
+            const serviceId = this.dataset.serviceId;
+            
+            if (this.classList.contains('selected')) {
+                // Deselect service
+                this.classList.remove('selected');
+                delete selectedServices[serviceId];
+            } else {
+                // Select service
+                this.classList.add('selected');
+                selectedServices[serviceId] = {
+                    id: serviceId,
+                    name: this.dataset.serviceName,
+                    price: parseFloat(this.dataset.servicePrice),
+                    duration: parseInt(this.dataset.serviceDuration)
+                };
+            }
+            
+            updateSummary();
+        });
+    });
+
+
+
+    function updateSummary() {
+        const serviceCount = Object.keys(selectedServices).length;
+        
+        if (serviceCount === 0) {
+            selectedServicesSummary.style.display = 'none';
+            if (servicesInput) {
+                servicesInput.value = '';
+            }
+            return;
+        }
+        
+        selectedServicesSummary.style.display = 'block';
+        
+        // Calculate totals
+        let totalPrice = 0;
+        let totalDuration = 0;
+        let totalServiceCount = 0;
+        
+        // Build services list HTML
+        let servicesListHTML = '';
+        
+        Object.values(selectedServices).forEach(service => {
+            totalPrice += service.price;
+            totalDuration += service.duration;
+            totalServiceCount += 1;
+            
+            servicesListHTML += `
+                <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-white rounded">
+                    <div>
+                        <strong>${service.name}</strong>
+                    </div>
+                    <div class="text-end">
+                        <span class="text-success">${service.price} جنيه</span>
+                        <small class="text-muted d-block">${service.duration} دقيقة</small>
+                    </div>
+                </div>
+            `;
+        });
+        
+        // Update display
+        selectedServicesList.innerHTML = servicesListHTML;
+        totalPriceElement.textContent = totalPrice;
+        totalDurationElement.textContent = totalDuration;
+        totalServicesElement.textContent = totalServiceCount;
+        
+        // Update hidden input with selected service IDs - الطريقة المحسنة
+        const serviceIds = Object.keys(selectedServices);
+        
+        // أولاً نحذف جميع الحقول المخفية الموجودة للخدمات
+        const existingHiddenInputs = document.querySelectorAll('input[name="selected_services"]');
+        existingHiddenInputs.forEach(input => input.remove());
+        
+        // إنشاء حقل مخفي لكل خدمة مختارة
+        const form = document.getElementById('bookingForm');
+        serviceIds.forEach(serviceId => {
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'selected_services';
+            hiddenInput.value = serviceId;
+            form.appendChild(hiddenInput);
+            console.log(`تم إضافة حقل مخفي للخدمة: ${serviceId}`);
+        });
+        
+        // تسجيل للتشخيص
+        console.log(`عدد الخدمات المختارة: ${serviceIds.length}`);
+        console.log(`IDs الخدمات: ${serviceIds.join(', ')}`);
+        
+        // التحقق من وجود الحقول المخفية بعد الإنشاء
+        const newHiddenInputs = document.querySelectorAll('input[name="selected_services"]');
+        console.log(`عدد الحقول المخفية المنشأة: ${newHiddenInputs.length}`);
+        
+        // تحديث الحقل الأصلي أيضاً كاحتياط
+        if (servicesInput) {
+            servicesInput.innerHTML = '';
+            serviceIds.forEach(serviceId => {
+                const option = document.createElement('option');
+                option.value = serviceId;
+                option.selected = true;
+                servicesInput.appendChild(option);
+            });
+        }
+    }
+    
+    // معالج حدث إرسال النموذج
+    const bookingForm = document.getElementById('bookingForm');
+    if (bookingForm) {
+        bookingForm.addEventListener('submit', function(e) {
+            console.log('بدء إرسال النموذج...');
+            
+            // التحقق من وجود خدمات مختارة
+            const selectedServicesCount = Object.keys(selectedServices).length;
+            console.log(`عدد الخدمات المختارة: ${selectedServicesCount}`);
+            
+            if (selectedServicesCount === 0) {
+                e.preventDefault();
+                alert('يجب اختيار خدمة واحدة على الأقل');
+                return false;
+            }
+            
+            // التأكد من وجود الحقول المخفية قبل الإرسال
+            updateSummary();
+            
+            // فحص الحقول المخفية الموجودة
+            const hiddenInputs = document.querySelectorAll('input[name="selected_services"]');
+            console.log(`عدد الحقول المخفية عند الإرسال: ${hiddenInputs.length}`);
+            
+            // طباعة قيم الحقول المخفية
+            hiddenInputs.forEach((input, index) => {
+                console.log(`الحقل المخفي ${index + 1}: ${input.value}`);
+            });
+            
+            // طباعة جميع بيانات النموذج
+            const formData = new FormData(bookingForm);
+            console.log('بيانات النموذج قبل الإرسال:');
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}: ${value}`);
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

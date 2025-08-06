@@ -1,0 +1,119 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}تفاصيل الحجز #{{ booking.id }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/bookings.css' %}">
+{# We will reuse the styles from booking_chat.html directly since it's included #}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="booking-detail-container">
+        <h2 class="text-center mb-4">تفاصيل الحجز #{{ booking.id }}</h2>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                معلومات الحجز
+            </div>
+            <div class="card-body">
+                <p><strong>المحل:</strong> <a href="{% url 'barbershops:detail' booking.barbershop.pk %}">{{ booking.barbershop.name }}</a></p>
+                <div class="mb-3">
+                    <strong>الخدمات:</strong>
+                    {% if booking.booking_services.exists %}
+                        <div class="mt-2">
+                            {% for booking_service in booking.booking_services.all %}
+                                <div class="d-flex justify-content-between align-items-center p-2 mb-2 bg-light rounded">
+                                    <div>
+                                        <span class="fw-bold">{{ booking_service.service.name }}</span>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="text-success">{{ booking_service.service.price }} جنيه</span>
+                                        <small class="text-muted d-block">{{ booking_service.service.duration }} دقيقة</small>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <!-- Fallback for old bookings with single service -->
+                        {% if booking.service %}
+                            <span>{{ booking.service.name }}</span>
+                        {% else %}
+                            <span class="text-muted">لا توجد خدمات محددة</span>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <p><strong>العميل:</strong> 
+                    {% if booking.customer %}
+                        {{ booking.customer.get_full_name|default:booking.customer.username }}
+                    {% else %}
+                        {{ booking.customer_name }}
+                    {% endif %}
+                </p>
+                <p><strong>التاريخ:</strong> 
+                    {% if booking.booking_day %}
+                        {{ booking.booking_day|date:"Y-m-d" }}
+                    {% else %}
+                        غير محدد
+                    {% endif %}
+                </p>
+                <p><strong>رقم الدور:</strong> {{ booking.queue_number }}</p>
+                <p><strong>الحالة:</strong> <span class="badge {{ booking.get_status_class }}">{{ booking.get_status_display_arabic }}</span></p>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <strong>إجمالي السعر:</strong> <span class="text-success">{{ booking.total_price }} جنيه</span>
+                    </div>
+                    <div class="col-md-4">
+                        <strong>إجمالي المدة:</strong> <span class="text-info">{{ booking.total_duration }} دقيقة</span>
+                    </div>
+                    <div class="col-md-4">
+                        <strong>عدد الخدمات:</strong> <span class="text-primary">{{ booking.booking_services.count }}</span>
+                    </div>
+                </div>
+                <p><strong>تم الإنشاء:</strong> {{ booking.created_at|naturaltime }}</p>
+                {% if booking.notes %}
+                <p><strong>ملاحظات:</strong> {{ booking.notes }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="text-center mb-4">
+            <a href="{% url 'bookings:booking_chat' booking.pk %}" class="btn btn-primary">
+                <i class="fas fa-comments me-1"></i> المحادثة
+            </a>
+            {% if request.user == booking.customer and booking.status == 'pending' and booking.can_be_cancelled %}
+                <a href="{% url 'bookings:cancel' booking.pk %}" class="btn btn-danger">
+                    <i class="fas fa-times me-1"></i> إلغاء الحجز
+                </a>
+            {% endif %}
+            {% if request.user == booking.barbershop.owner %}
+                {% if booking.status == 'pending' %}
+                    <a href="{% url 'bookings:confirm' booking.pk %}" class="btn btn-success">
+                        <i class="fas fa-check me-1"></i> تأكيد الحجز
+                    </a>
+                    <a href="{% url 'bookings:reject' booking.pk %}" class="btn btn-danger">
+                        <i class="fas fa-times me-1"></i> رفض الحجز
+                    </a>
+                {% elif booking.status == 'confirmed' %}
+                    <a href="{% url 'bookings:completed' booking.pk %}" class="btn btn-success">
+                        <i class="fas fa-check-double me-1"></i> تم الإنجاز
+                    </a>
+                    <a href="{% url 'bookings:no_show' booking.pk %}" class="btn btn-secondary">
+                        <i class="fas fa-user-slash me-1"></i> لم يحضر
+                    </a>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <div class="text-center">
+            <a href="{% url 'bookings:list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i> العودة للحجوزات
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,147 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}آراء العملاء{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/barbershop_detail.css' %}">
+<style>
+    .review-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        margin-bottom: 30px;
+    }
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .review-customer h4 {
+        color: #343a40;
+        margin-bottom: 5px;
+        font-weight: 600;
+    }
+    .review-barbershop {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+    .review-rating {
+        text-align: right;
+    }
+    .review-stars {
+        color: #d4af37;
+        font-size: 1.2rem;
+        margin-bottom: 5px;
+    }
+    .review-date {
+        color: #adb5bd;
+        font-size: 0.85rem;
+        margin: 0;
+    }
+    .review-comment {
+        color: #495057;
+        line-height: 1.6;
+        margin-bottom: 15px;
+    }
+    .review-service {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        border-left: 4px solid #d4af37;
+    }
+    .sidebar-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        margin-bottom: 30px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="detail-hero">
+    <div class="container">
+        <h1 class="shop-name">آراء العملاء</h1>
+        <p class="shop-description">اكتشف تجارب عملائنا مع خدماتنا المميزة</p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            {% if reviews %}
+                {% for review in reviews %}
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="review-customer">
+                                <h4>{{ review.customer.get_full_name|default:review.customer.username }}</h4>
+                                <p class="review-barbershop">
+                                    <i class="fas fa-store"></i> {{ review.barbershop.name }}
+                                </p>
+                            </div>
+                            <div class="review-rating">
+                                <div class="review-stars">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= review.rating %}
+                                            <i class="fas fa-star"></i>
+                                        {% else %}
+                                            <i class="far fa-star text-muted"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <p class="review-date">{{ review.created_at|date:"d F Y" }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="review-comment">
+                            {{ review.comment }}
+                        </div>
+                        
+                        {% if review.service %}
+                            <div class="review-service">
+                                <p class="mb-0 text-muted">
+                                    <i class="fas fa-cut"></i> الخدمة: {{ review.service }}
+                                </p>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-star-half-alt"></i>
+                    <h3>لا توجد تقييمات حتى الآن</h3>
+                    <p>كن أول من يشارك تجربته مع خدماتنا</p>
+                    <a href="{% url 'barbershops:list' %}" class="btn btn-primary">
+                        <i class="fas fa-store"></i> اختر محل حلاقة لإضافة تقييم
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="sidebar-card">
+                <h3 class="sidebar-widget-title">
+                    <i class="fas fa-plus-circle"></i>
+                    شارك تجربتك
+                </h3>
+                
+                <p class="text-muted mb-4">
+                    هل استمتعت بخدماتنا؟ شاركنا رأيك وساعد الآخرين في اتخاذ قرارهم
+                </p>
+                
+                <a href="{% url 'barbershops:list' %}" class="btn btn-primary btn-lg w-100">
+                    <i class="fas fa-store"></i>
+                    اختر محل حلاقة لإضافة تقييم
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

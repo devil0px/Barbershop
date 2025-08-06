@@ -1,0 +1,174 @@
+/* --- Management Page Styles --- */
+
+.management-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.management-header h1 {
+    font-size: 2.2rem;
+    color: #343a40;
+    margin: 0;
+}
+
+.btn-add-new {
+    background-color: #d4af37;
+    color: #333;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-add-new:hover {
+    background-color: #c5a02d;
+    transform: translateY(-2px);
+}
+
+.management-table {
+    background-color: #fff;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.table-thumbnail {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.table-placeholder {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    background-color: #e9ecef;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.badge-status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-status.active {
+    background-color: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+}
+
+.badge-status.inactive {
+    background-color: rgba(108, 117, 125, 0.1);
+    color: #6c757d;
+}
+
+.action-buttons a,
+.action-buttons button {
+    margin: 0 4px;
+}
+
+.no-results-alert {
+    background-color: #f8f9fa;
+    border: 1px dashed #dee2e6;
+    border-radius: 15px;
+    padding: 40px;
+    text-align: center;
+}
+
+.no-results-alert h4 {
+    color: #343a40;
+    font-weight: 600;
+}
+
+.no-results-alert p {
+    color: #6c757d;
+    margin-bottom: 20px;
+}
+
+/* --- Management Card Styles --- */
+
+.management-card {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.management-card-image {
+    height: 200px;
+    object-fit: cover;
+}
+
+.barbershop-card-placeholder.management-card-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    color: #adb5bd;
+}
+
+.barbershop-card-placeholder .fas {
+    font-size: 4rem;
+}
+
+.management-card-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.management-card-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.management-card-title a {
+    color: #343a40;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.management-card-title a:hover {
+    color: #d4af37;
+}
+
+.management-card-text {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+    flex-grow: 1;
+}
+
+.management-card-actions {
+    margin-top: auto;
+    padding-top: 15px;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}

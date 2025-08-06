@@ -1,0 +1,93 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}تفاصيل التقييم{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/confirmation.css' %}">
+<style>
+    .review-card, .reply-card {
+        background-color: #fff;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+        margin-bottom: 2rem;
+        padding: 2rem;
+    }
+    .review-header, .reply-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .review-customer {
+        font-weight: 600;
+        font-size: 1.2rem;
+    }
+    .review-date, .reply-date {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    .rating-stars .fa-star {
+        color: #ffc107;
+    }
+    .review-comment, .reply-text {
+        line-height: 1.7;
+        color: #495057;
+    }
+    .no-reply {
+        text-align: center;
+        padding: 2rem;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container confirmation-container py-5">
+    <h1 class="confirmation-title">تفاصيل التقييم</h1>
+
+    <!-- Original Review Card -->
+    <div class="review-card">
+        <div class="review-header">
+            <div>
+                <div class="review-customer">{{ review.customer.get_full_name|default:review.customer.username }}</div>
+                <div class="rating-stars mt-1">
+                    {% for i in "12345" %}
+                        <i class="fas fa-star{% if forloop.counter > review.rating %} far text-muted{% endif %}"></i>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="review-date">{{ review.created_at|date:"d/m/Y H:i" }}</div>
+        </div>
+        <p class="review-comment">{{ review.comment }}</p>
+    </div>
+
+    <!-- Merchant Reply Card -->
+    <div class="reply-card">
+        <div class="reply-header">
+            <h5 class="mb-0">رد صاحب المحل</h5>
+            {% if review.reply %}
+            <div class="reply-date">{{ review.replied_at|date:"d/m/Y H:i" }}</div>
+            {% endif %}
+        </div>
+        {% if review.reply %}
+            <p class="reply-text">{{ review.reply }}</p>
+            <div class="text-end mt-4">
+                <a href="{% url 'barbershops:review_reply' review.pk %}" class="btn btn-primary">تعديل الرد</a>
+            </div>
+        {% else %}
+            <div class="no-reply">
+                <p class="text-muted mb-2">لم يتم إضافة رد على هذا التقييم بعد.</p>
+                <a href="{% url 'barbershops:review_reply' review.pk %}" class="btn btn-success">إضافة رد الآن</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'barbershops:review_list' %}?barbershop_id={{ review.barbershop.pk }}" class="btn btn-secondary">العودة إلى قائمة التقييمات</a>
+    </div>
+</div>
+{% endblock %}

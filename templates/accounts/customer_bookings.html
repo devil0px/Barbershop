@@ -1,0 +1,94 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}حجوزاتي{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/bookings.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="dashboard-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3>
+                        <i class="fas fa-calendar-alt" style="color: #d4af37; margin-right: 10px;"></i>
+                        حجوزاتي
+                    </h3>
+                </div>
+                
+                {% if bookings %}
+                    <div class="row">
+                        {% for booking in bookings %}
+                            <div class="col-lg-6 col-md-12 mb-3">
+                                <div class="booking-card">
+                                    <!-- Header -->
+                                    <div class="booking-header">
+                                        <h5 class="booking-title">
+                                            <i class="fas fa-cut"></i>
+                                            {{ booking.barbershop.name }}
+                                        </h5>
+                                        <span class="booking-status {% if booking.status == 'confirmed' %}status-confirmed{% elif booking.status == 'pending' %}status-pending{% else %}status-cancelled{% endif %}">
+                                            {{ booking.get_status_display }}
+                                        </span>
+                                    </div>
+
+                                    <!-- Info Grid -->
+                                    <div class="booking-info">
+                                        <div class="info-item">
+                                            <i class="fas fa-calendar-alt"></i>
+                                            <span class="info-label">التاريخ:</span>
+                                            <span class="info-value">{{ booking.booking_day|date:"j F Y" }}</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <i class="fas fa-clock"></i>
+                                            <span class="info-label">الوقت:</span>
+                                            <span class="info-value">{{ booking.booking_time|time:"H:i" }}</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Queue Number -->
+                                    {% if booking.queue_number %}
+                                        <div class="text-center">
+                                            <div class="queue-number">
+                                                <i class="fas fa-users"></i>
+                                                الدور الحالي: {{ booking.queue_number }}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+
+                                    <!-- Actions -->
+                                    <div class="booking-actions">
+                                        <a href="{% url 'bookings:detail' booking.id %}" class="btn-action btn-primary">
+                                            <i class="fas fa-eye"></i>
+                                            تفاصيل
+                                        </a>
+                                        {% if booking.status == 'pending' %}
+                                            <a href="{% url 'bookings:delete' booking.id %}" class="btn-action btn-danger" onclick="return confirm('هل أنت متأكد من حذف هذا الحجز؟')">
+                                                <i class="fas fa-trash"></i>
+                                                إلغاء
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-calendar-plus" style="font-size: 3rem; color: #ddd; margin-bottom: 15px;"></i>
+                        <h6>لا توجد حجوزات حتى الآن</h6>
+                        <p class="text-muted small">يمكنك حجز موعد جديد الآن</p>
+                        <a href="{% url 'barbershops:list' %}" class="btn btn-primary">
+                            <i class="fas fa-search"></i> تصفح المحلات
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
