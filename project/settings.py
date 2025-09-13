@@ -35,18 +35,18 @@ env.read_env(env_file_path)
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-wp94mum&0-pt@k+edv-p^s443ky9rly6qp70n@q95rzu7wbi09'
+SECRET_KEY = env('SECRET_KEY', default='django-insecure-wp94mum&0-pt@k+edv-p^s443ky9rly6qp70n@q95rzu7wbi09')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Set to False to enable custom error pages (404, 500, 403)
 # Temporarily set to True to fix media files serving via ngrok
-DEBUG = True
+DEBUG = env.bool('DEBUG', default=True)
 
-ALLOWED_HOSTS = [
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[
     'localhost',
     '127.0.0.1',
-    'f8c2a75af1d6.ngrok-free.app',
-]
+    '97a8fcc5b22d.ngrok-free.app',
+])
 
 
 
@@ -198,7 +198,7 @@ SECURE_HSTS_PRELOAD = True
 # CSRF Settings
 CSRF_TRUSTED_ORIGINS = [
 
-    'https://f8c2a75af1d6.ngrok-free.app',
+    'https://97a8fcc5b22d.ngrok-free.app',
 ]
   
 # r-praise.gl.at.ply.gg:43458
@@ -321,9 +321,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # For Gmail SMTP
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='devil0px@gmail.com')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='your-app-password')
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='Barber Shop <devil0px@gmail.com>')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='Barber Shop <noreply@example.com>')
 
 # Site settings
 SITE_NAME = 'Barber Shop'
@@ -344,15 +344,31 @@ SOCIALACCOUNT_PROVIDERS = {
         },
         'OAUTH_PKCE_ENABLED': True,
         'APP': {
-            'client_id': env('GOOGLE_CLIENT_ID', default='YOUR_GOOGLE_CLIENT_ID'),
-            'secret': env('GOOGLE_SECRET_KEY', default='YOUR_GOOGLE_SECRET_KEY'),
+            'client_id': env('GOOGLE_CLIENT_ID', default=''),
+            'secret': env('GOOGLE_SECRET_KEY', default=''),
             'key': ''
         }
     }
 }
 
 # Google One Tap Sign-In settings
-GOOGLE_ONE_TAP_CLIENT_ID = env('GOOGLE_CLIENT_ID', default='YOUR_GOOGLE_CLIENT_ID')
+GOOGLE_ONE_TAP_CLIENT_ID = env('GOOGLE_CLIENT_ID', default='')
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/4.2/howto/static-files/
+
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 
 # Logging Configuration for Social Auth Debugging
 LOGGING = {

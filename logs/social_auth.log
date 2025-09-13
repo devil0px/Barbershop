@@ -1914,3 +1914,238 @@ INFO 2025-08-06 13:43:39,028 middleware 2724 7400 Host: f8c2a75af1d6.ngrok-free.
 INFO 2025-08-06 13:43:39,029 middleware 2724 7400 User: Not available yet
 INFO 2025-08-06 13:43:40,323 middleware 2724 7400 Response status: 302
 INFO 2025-08-06 13:43:40,324 middleware 2724 7400 Redirect to: /
+INFO 2025-08-06 17:06:31,115 middleware 12336 8636 Google OAuth request: GET /accounts/google/login/
+INFO 2025-08-06 17:06:31,115 middleware 12336 8636 Host: f8c2a75af1d6.ngrok-free.app
+INFO 2025-08-06 17:06:31,117 middleware 12336 8636 User: Not available yet
+INFO 2025-08-06 17:06:31,126 middleware 12336 8636 Response status: 302
+INFO 2025-08-06 17:06:31,127 middleware 12336 8636 Redirect to: https://accounts.google.com/o/oauth2/v2/auth?client_id=239967388379-fia34m1m8lkarjduka4odnj10kde6ajn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Ff8c2a75af1d6.ngrok-free.app%2Faccounts%2Fgoogle%2Flogin%2Fcallback%2F&scope=email+profile&response_type=code&state=Cv5ltDIgaAgTPnnT&access_type=online&code_challenge_method=S256&code_challenge=SEZUTnYAWanKuF4mRA3sGswjRG0bNXTo1e4b2vvhVEk
+INFO 2025-08-06 17:06:35,516 middleware 12336 10484 Google OAuth request: GET /accounts/google/login/callback/
+INFO 2025-08-06 17:06:35,516 middleware 12336 10484 Host: f8c2a75af1d6.ngrok-free.app
+INFO 2025-08-06 17:06:35,519 middleware 12336 10484 User: Not available yet
+INFO 2025-08-06 17:06:36,518 middleware 12336 10484 Response status: 302
+INFO 2025-08-06 17:06:36,519 middleware 12336 10484 Redirect to: /
+INFO 2025-08-06 17:07:01,808 middleware 12336 4756 Google OAuth request: GET /accounts/google/login/callback/
+INFO 2025-08-06 17:07:01,808 middleware 12336 4756 Host: f8c2a75af1d6.ngrok-free.app
+INFO 2025-08-06 17:07:01,810 middleware 12336 4756 User: Not available yet
+INFO 2025-08-06 17:07:02,564 middleware 12336 4756 Response status: 200
+INFO 2025-08-06 17:07:14,817 middleware 12336 10872 Google OAuth request: GET /accounts/google/login/callback/
+INFO 2025-08-06 17:07:14,818 middleware 12336 10872 Host: f8c2a75af1d6.ngrok-free.app
+INFO 2025-08-06 17:07:14,819 middleware 12336 10872 User: Not available yet
+INFO 2025-08-06 17:07:15,203 middleware 12336 10872 Response status: 200
+INFO 2025-08-06 17:07:31,599 middleware 12336 13068 Google OAuth request: GET /accounts/google/login/
+INFO 2025-08-06 17:07:31,599 middleware 12336 13068 Host: f8c2a75af1d6.ngrok-free.app
+INFO 2025-08-06 17:07:31,601 middleware 12336 13068 User: Not available yet
+INFO 2025-08-06 17:07:31,612 middleware 12336 13068 Response status: 302
+INFO 2025-08-06 17:07:31,612 middleware 12336 13068 Redirect to: https://accounts.google.com/o/oauth2/v2/auth?client_id=239967388379-fia34m1m8lkarjduka4odnj10kde6ajn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Ff8c2a75af1d6.ngrok-free.app%2Faccounts%2Fgoogle%2Flogin%2Fcallback%2F&scope=email+profile&response_type=code&state=liKzTiiyTKE42nPt&access_type=online&code_challenge_method=S256&code_challenge=1_imhf0o9amZbozsWGQLqr62ytuQbW0s6Apar8u9cUU
+INFO 2025-08-06 17:07:34,228 middleware 12336 5128 Google OAuth request: GET /accounts/google/login/callback/
+INFO 2025-08-06 17:07:34,229 middleware 12336 5128 Host: f8c2a75af1d6.ngrok-free.app
+INFO 2025-08-06 17:07:34,230 middleware 12336 5128 User: Not available yet
+INFO 2025-08-06 17:07:35,058 middleware 12336 5128 Response status: 302
+INFO 2025-08-06 17:07:35,058 middleware 12336 5128 Redirect to: /
+INFO 2025-08-06 17:08:31,195 middleware 12336 13272 Google OAuth request: GET /accounts/google/login/
+INFO 2025-08-06 17:08:31,196 middleware 12336 13272 Host: f8c2a75af1d6.ngrok-free.app
+INFO 2025-08-06 17:08:31,197 middleware 12336 13272 User: Not available yet
+INFO 2025-08-06 17:08:31,206 middleware 12336 13272 Response status: 302
+INFO 2025-08-06 17:08:31,207 middleware 12336 13272 Redirect to: https://accounts.google.com/o/oauth2/v2/auth?client_id=239967388379-fia34m1m8lkarjduka4odnj10kde6ajn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Ff8c2a75af1d6.ngrok-free.app%2Faccounts%2Fgoogle%2Flogin%2Fcallback%2F&scope=email+profile&response_type=code&state=pdR7LjMJVSCYTVdZ&access_type=online&code_challenge_method=S256&code_challenge=8WJ5l8HrE15VCh2PTZp7ok3N0hx-YhPheoJynSIlKPc
+INFO 2025-08-06 17:09:05,680 middleware 12336 11940 Google OAuth request: GET /accounts/google/login/callback/
+INFO 2025-08-06 17:09:05,680 middleware 12336 11940 Host: f8c2a75af1d6.ngrok-free.app
+INFO 2025-08-06 17:09:05,681 middleware 12336 11940 User: Not available yet
+INFO 2025-08-06 17:09:06,793 middleware 12336 11940 Response status: 302
+INFO 2025-08-06 17:09:06,794 middleware 12336 11940 Redirect to: /bookings/create/1/
+WARNING 2025-08-06 17:10:50,912 views 12336 6508 403 Error: User elmasrialaa363@gmail.com tried to access forbidden resource /barbershops/1/services/
+WARNING 2025-08-06 17:10:54,447 views 12336 2456 403 Error: User elmasrialaa363@gmail.com tried to access forbidden resource /barbershops/1/services/
+INFO 2025-08-07 11:48:39,084 middleware 2856 13272 Google OAuth request: GET /accounts/google/login/
+INFO 2025-08-07 11:48:39,091 middleware 2856 13272 Host: bcf1c6090082.ngrok-free.app
+INFO 2025-08-07 11:48:39,091 middleware 2856 13272 User: Not available yet
+INFO 2025-08-07 11:48:39,131 middleware 2856 13272 Response status: 302
+INFO 2025-08-07 11:48:39,132 middleware 2856 13272 Redirect to: https://accounts.google.com/o/oauth2/v2/auth?client_id=239967388379-fia34m1m8lkarjduka4odnj10kde6ajn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fbcf1c6090082.ngrok-free.app%2Faccounts%2Fgoogle%2Flogin%2Fcallback%2F&scope=profile+email&response_type=code&state=sEcPG3AaT9g5SOPg&access_type=online&code_challenge_method=S256&code_challenge=xqcHjQVrYzTWkbYp9aYSW0f-LOtJr6CsMPBC7hK_PN0
+INFO 2025-08-07 11:48:39,887 middleware 2856 10780 Google OAuth request: GET /accounts/google/login/callback/
+INFO 2025-08-07 11:48:39,891 middleware 2856 10780 Host: bcf1c6090082.ngrok-free.app
+INFO 2025-08-07 11:48:39,891 middleware 2856 10780 User: Not available yet
+INFO 2025-08-07 11:48:41,362 middleware 2856 10780 Response status: 302
+INFO 2025-08-07 11:48:41,362 middleware 2856 10780 Redirect to: /
+INFO 2025-08-07 11:55:19,404 middleware 11404 280 Google OAuth request: GET /accounts/google/login/
+INFO 2025-08-07 11:55:19,404 middleware 11404 280 Host: bcf1c6090082.ngrok-free.app
+INFO 2025-08-07 11:55:19,404 middleware 11404 280 User: Not available yet
+INFO 2025-08-07 11:55:19,425 middleware 11404 280 Response status: 302
+INFO 2025-08-07 11:55:19,425 middleware 11404 280 Redirect to: https://accounts.google.com/o/oauth2/v2/auth?client_id=239967388379-fia34m1m8lkarjduka4odnj10kde6ajn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fbcf1c6090082.ngrok-free.app%2Faccounts%2Fgoogle%2Flogin%2Fcallback%2F&scope=profile+email&response_type=code&state=iRiPcZb3ILdQaUBa&access_type=online&code_challenge_method=S256&code_challenge=ao5jkxCxKckpMPz8TOxD9w0zM7AFJuDQvEsmNAR564k
+INFO 2025-08-07 11:55:33,792 middleware 11404 7092 Google OAuth request: GET /accounts/google/login/callback/
+INFO 2025-08-07 11:55:33,792 middleware 11404 7092 Host: bcf1c6090082.ngrok-free.app
+INFO 2025-08-07 11:55:33,792 middleware 11404 7092 User: Not available yet
+INFO 2025-08-07 11:55:34,575 middleware 11404 7092 Response status: 302
+INFO 2025-08-07 11:55:34,575 middleware 11404 7092 Redirect to: /accounts/inactive/
+INFO 2025-08-07 11:55:46,889 middleware 11404 4548 Google OAuth request: GET /accounts/google/login/
+INFO 2025-08-07 11:55:46,889 middleware 11404 4548 Host: bcf1c6090082.ngrok-free.app
+INFO 2025-08-07 11:55:46,891 middleware 11404 4548 User: Not available yet
+INFO 2025-08-07 11:55:46,913 middleware 11404 4548 Response status: 302
+INFO 2025-08-07 11:55:46,914 middleware 11404 4548 Redirect to: https://accounts.google.com/o/oauth2/v2/auth?client_id=239967388379-fia34m1m8lkarjduka4odnj10kde6ajn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fbcf1c6090082.ngrok-free.app%2Faccounts%2Fgoogle%2Flogin%2Fcallback%2F&scope=profile+email&response_type=code&state=csQNWqcwxD3HNXuE&access_type=online&code_challenge_method=S256&code_challenge=SQ83vl9cuam-BBtLZsJWjDcawfE6Fzy-xjozif0mDrE
+INFO 2025-08-07 11:55:55,042 middleware 11404 4672 Google OAuth request: GET /accounts/google/login/callback/
+INFO 2025-08-07 11:55:55,042 middleware 11404 4672 Host: bcf1c6090082.ngrok-free.app
+INFO 2025-08-07 11:55:55,042 middleware 11404 4672 User: Not available yet
+INFO 2025-08-07 11:55:55,925 middleware 11404 4672 Response status: 302
+INFO 2025-08-07 11:55:55,925 middleware 11404 4672 Redirect to: /
+INFO 2025-08-07 12:06:22,793 middleware 11404 8936 Google OAuth request: GET /accounts/google/login/
+INFO 2025-08-07 12:06:22,796 middleware 11404 8936 Host: bcf1c6090082.ngrok-free.app
+INFO 2025-08-07 12:06:22,796 middleware 11404 8936 User: Not available yet
+INFO 2025-08-07 12:06:22,814 middleware 11404 8936 Response status: 302
+INFO 2025-08-07 12:06:22,814 middleware 11404 8936 Redirect to: https://accounts.google.com/o/oauth2/v2/auth?client_id=239967388379-fia34m1m8lkarjduka4odnj10kde6ajn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fbcf1c6090082.ngrok-free.app%2Faccounts%2Fgoogle%2Flogin%2Fcallback%2F&scope=profile+email&response_type=code&state=vXiTxYDKwZkQNu0r&access_type=online&code_challenge_method=S256&code_challenge=Zjoa3t5vIriIQ79lveXNN1iXVHu_hZ-K-ApjR6yPNnk
+INFO 2025-08-07 12:06:36,980 middleware 11404 9608 Google OAuth request: GET /accounts/google/login/
+INFO 2025-08-07 12:06:36,980 middleware 11404 9608 Host: bcf1c6090082.ngrok-free.app
+INFO 2025-08-07 12:06:36,980 middleware 11404 9608 User: Not available yet
+INFO 2025-08-07 12:06:36,991 middleware 11404 9608 Response status: 302
+INFO 2025-08-07 12:06:36,991 middleware 11404 9608 Redirect to: https://accounts.google.com/o/oauth2/v2/auth?client_id=239967388379-fia34m1m8lkarjduka4odnj10kde6ajn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fbcf1c6090082.ngrok-free.app%2Faccounts%2Fgoogle%2Flogin%2Fcallback%2F&scope=profile+email&response_type=code&state=L7LHoPtuI1mBuC0i&access_type=online&code_challenge_method=S256&code_challenge=6rF_sWiS1zi2bPz_J6ym20chz8i84jbRnf73A4m37EU
+INFO 2025-08-07 12:06:41,222 middleware 11404 12444 Google OAuth request: GET /accounts/google/login/callback/
+INFO 2025-08-07 12:06:41,222 middleware 11404 12444 Host: bcf1c6090082.ngrok-free.app
+INFO 2025-08-07 12:06:41,222 middleware 11404 12444 User: Not available yet
+INFO 2025-08-07 12:06:42,174 middleware 11404 12444 Response status: 302
+INFO 2025-08-07 12:06:42,174 middleware 11404 12444 Redirect to: /
+INFO 2025-08-07 12:12:42,854 middleware 11404 1660 Google OAuth request: GET /accounts/google/login/
+INFO 2025-08-07 12:12:42,854 middleware 11404 1660 Host: bcf1c6090082.ngrok-free.app
+INFO 2025-08-07 12:12:42,854 middleware 11404 1660 User: Not available yet
+INFO 2025-08-07 12:12:42,865 middleware 11404 1660 Response status: 302
+INFO 2025-08-07 12:12:42,865 middleware 11404 1660 Redirect to: https://accounts.google.com/o/oauth2/v2/auth?client_id=239967388379-fia34m1m8lkarjduka4odnj10kde6ajn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fbcf1c6090082.ngrok-free.app%2Faccounts%2Fgoogle%2Flogin%2Fcallback%2F&scope=profile+email&response_type=code&state=xbFcjtnERPzl8jfE&access_type=online&code_challenge_method=S256&code_challenge=B21VphHkLF-gVqUXMDOE51FonCUTuEHe450PlOToYcU
+INFO 2025-08-07 12:33:54,968 middleware 11404 11728 Google OAuth request: GET /accounts/google/login/
+INFO 2025-08-07 12:33:54,968 middleware 11404 11728 Host: bcf1c6090082.ngrok-free.app
+INFO 2025-08-07 12:33:54,972 middleware 11404 11728 User: Not available yet
+INFO 2025-08-07 12:33:54,991 middleware 11404 11728 Response status: 302
+INFO 2025-08-07 12:33:54,991 middleware 11404 11728 Redirect to: https://accounts.google.com/o/oauth2/v2/auth?client_id=239967388379-fia34m1m8lkarjduka4odnj10kde6ajn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fbcf1c6090082.ngrok-free.app%2Faccounts%2Fgoogle%2Flogin%2Fcallback%2F&scope=profile+email&response_type=code&state=bsqe4Kfc0gOAk3f1&access_type=online&code_challenge_method=S256&code_challenge=hnF6wswqJSCnA6IYX8HqSe5qSQQbQFew3KbFkcCT00A
+INFO 2025-08-07 12:34:01,867 middleware 11404 11988 Google OAuth request: GET /accounts/google/login/callback/
+INFO 2025-08-07 12:34:01,875 middleware 11404 11988 Host: bcf1c6090082.ngrok-free.app
+INFO 2025-08-07 12:34:01,875 middleware 11404 11988 User: Not available yet
+INFO 2025-08-07 12:34:02,791 middleware 11404 11988 Response status: 302
+INFO 2025-08-07 12:34:02,791 middleware 11404 11988 Redirect to: /
+INFO 2025-08-07 12:35:11,012 middleware 11404 6544 Google OAuth request: GET /accounts/google/login/
+INFO 2025-08-07 12:35:11,012 middleware 11404 6544 Host: bcf1c6090082.ngrok-free.app
+INFO 2025-08-07 12:35:11,017 middleware 11404 6544 User: Not available yet
+INFO 2025-08-07 12:35:11,035 middleware 11404 6544 Response status: 302
+INFO 2025-08-07 12:35:11,035 middleware 11404 6544 Redirect to: https://accounts.google.com/o/oauth2/v2/auth?client_id=239967388379-fia34m1m8lkarjduka4odnj10kde6ajn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fbcf1c6090082.ngrok-free.app%2Faccounts%2Fgoogle%2Flogin%2Fcallback%2F&scope=profile+email&response_type=code&state=FofUHfTrWlnD1RNc&access_type=online&code_challenge_method=S256&code_challenge=Z0KqVBEU5HBXUFvULG9yb7vy_xDCTXTdAIv_dCDjv5Y
+INFO 2025-08-07 12:35:16,362 middleware 11404 12496 Google OAuth request: GET /accounts/google/login/callback/
+INFO 2025-08-07 12:35:16,362 middleware 11404 12496 Host: bcf1c6090082.ngrok-free.app
+INFO 2025-08-07 12:35:16,362 middleware 11404 12496 User: Not available yet
+INFO 2025-08-07 12:35:17,174 middleware 11404 12496 Response status: 302
+INFO 2025-08-07 12:35:17,174 middleware 11404 12496 Redirect to: /
+INFO 2025-08-07 12:36:36,997 middleware 11404 3224 Google OAuth request: GET /accounts/google/login/
+INFO 2025-08-07 12:36:36,997 middleware 11404 3224 Host: bcf1c6090082.ngrok-free.app
+INFO 2025-08-07 12:36:37,001 middleware 11404 3224 User: Not available yet
+INFO 2025-08-07 12:36:37,012 middleware 11404 3224 Response status: 302
+INFO 2025-08-07 12:36:37,022 middleware 11404 3224 Redirect to: https://accounts.google.com/o/oauth2/v2/auth?client_id=239967388379-fia34m1m8lkarjduka4odnj10kde6ajn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fbcf1c6090082.ngrok-free.app%2Faccounts%2Fgoogle%2Flogin%2Fcallback%2F&scope=profile+email&response_type=code&state=GwksaYJaVolPk1Fh&access_type=online&code_challenge_method=S256&code_challenge=AChdCqrJve2eAGHttXp5KW8dklN97FqYV6TFrcg0pU0
+INFO 2025-08-07 12:36:46,467 middleware 11404 6452 Google OAuth request: GET /accounts/google/login/callback/
+INFO 2025-08-07 12:36:46,467 middleware 11404 6452 Host: bcf1c6090082.ngrok-free.app
+INFO 2025-08-07 12:36:46,467 middleware 11404 6452 User: Not available yet
+INFO 2025-08-07 12:36:47,562 middleware 11404 6452 Response status: 302
+INFO 2025-08-07 12:36:47,562 middleware 11404 6452 Redirect to: /
+INFO 2025-08-07 13:50:02,091 middleware 7368 10504 Google OAuth request: GET /accounts/google/login/
+INFO 2025-08-07 13:50:02,120 middleware 7368 10504 Host: bcf1c6090082.ngrok-free.app
+INFO 2025-08-07 13:50:02,120 middleware 7368 10504 User: Not available yet
+INFO 2025-08-07 13:50:02,137 middleware 7368 10504 Response status: 302
+INFO 2025-08-07 13:50:02,137 middleware 7368 10504 Redirect to: https://accounts.google.com/o/oauth2/v2/auth?client_id=239967388379-fia34m1m8lkarjduka4odnj10kde6ajn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fbcf1c6090082.ngrok-free.app%2Faccounts%2Fgoogle%2Flogin%2Fcallback%2F&scope=profile+email&response_type=code&state=BtbDrOTrcR2tQqtZ&access_type=online&code_challenge_method=S256&code_challenge=hTbc115WFq3VMNcOF9CNDlRYVRpNrBb_xjF3T9Uzt50
+INFO 2025-08-07 13:50:04,772 middleware 7368 11664 Google OAuth request: GET /accounts/google/login/callback/
+INFO 2025-08-07 13:50:04,772 middleware 7368 11664 Host: bcf1c6090082.ngrok-free.app
+INFO 2025-08-07 13:50:04,772 middleware 7368 11664 User: Not available yet
+INFO 2025-08-07 13:50:06,993 middleware 7368 11664 Response status: 302
+INFO 2025-08-07 13:50:06,993 middleware 7368 11664 Redirect to: /
+INFO 2025-08-07 13:58:19,856 middleware 9400 9300 Google OAuth request: GET /accounts/google/login/
+INFO 2025-08-07 13:58:19,858 middleware 9400 9300 Host: bcf1c6090082.ngrok-free.app
+INFO 2025-08-07 13:58:19,859 middleware 9400 9300 User: Not available yet
+INFO 2025-08-07 13:58:19,862 middleware 9400 9300 Response status: 302
+INFO 2025-08-07 13:58:19,862 middleware 9400 9300 Redirect to: https://accounts.google.com/o/oauth2/v2/auth?client_id=239967388379-fia34m1m8lkarjduka4odnj10kde6ajn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fbcf1c6090082.ngrok-free.app%2Faccounts%2Fgoogle%2Flogin%2Fcallback%2F&scope=email+profile&response_type=code&state=G9P5uzi84zkd7GAz&access_type=online&code_challenge_method=S256&code_challenge=PoVh1kNxcLkabiJomE5yVdcT821oubhEpIsUqDxXtw4
+INFO 2025-08-07 13:58:20,792 middleware 9400 6252 Google OAuth request: GET /accounts/google/login/callback/
+INFO 2025-08-07 13:58:20,792 middleware 9400 6252 Host: bcf1c6090082.ngrok-free.app
+INFO 2025-08-07 13:58:20,792 middleware 9400 6252 User: Not available yet
+INFO 2025-08-07 13:58:21,893 middleware 9400 6252 Response status: 302
+INFO 2025-08-07 13:58:21,893 middleware 9400 6252 Redirect to: /
+ERROR 2025-08-07 13:59:20,669 middleware 9400 11000 Social auth error: Cannot resolve keyword 'turn_number' into field. Choices are: barbershop, barbershop_id, booking_day, booking_services, created_at, customer, customer_email, customer_id, customer_name, customer_phone, history, id, messages, notes, notifications, queue_number, review, service, service_id, services, status, total_price, updated_at
+ERROR 2025-08-07 13:59:20,669 middleware 9400 11000 Request path: /accounts/dashboard/barber/
+ERROR 2025-08-07 13:59:20,669 middleware 9400 11000 Request method: GET
+ERROR 2025-08-07 13:59:20,669 middleware 9400 11000 Request host: bcf1c6090082.ngrok-free.app
+ERROR 2025-08-07 13:59:20,669 middleware 9400 11000 User: devil25px@gmail.com
+ERROR 2025-08-07 13:59:20,669 middleware 9400 11000 Session keys: ['_auth_user_id', '_auth_user_backend', '_auth_user_hash']
+ERROR 2025-08-07 13:59:20,688 middleware 9400 11000 Traceback: Traceback (most recent call last):
+  File "C:\Users\NewTech\Desktop\barbershop\Barbershop\Lib\site-packages\asgiref\sync.py", line 518, in thread_handler
+    raise exc_info[1]
+  File "C:\Users\NewTech\Desktop\barbershop\Barbershop\Lib\site-packages\django\core\handlers\base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+               ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NewTech\Desktop\barbershop\Barbershop\Lib\site-packages\asgiref\sync.py", line 468, in __call__
+    ret = await asyncio.shield(exec_coro)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NewTech\Desktop\barbershop\Barbershop\Lib\site-packages\asgiref\current_thread_executor.py", line 40, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NewTech\Desktop\barbershop\Barbershop\Lib\site-packages\asgiref\sync.py", line 522, in thread_handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NewTech\Desktop\barbershop\Barbershop\Lib\site-packages\django\views\generic\base.py", line 105, in view
+    return self.dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NewTech\Desktop\barbershop\Barbershop\Lib\site-packages\django\contrib\auth\mixins.py", line 73, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NewTech\Desktop\barbershop\Barbershop\Lib\site-packages\django\views\generic\base.py", line 144, in dispatch
+    return handler(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NewTech\Desktop\barbershop\Barbershop\Lib\site-packages\django\views\generic\base.py", line 228, in get
+    context = self.get_context_data(**kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NewTech\Desktop\barbershop\Barbershop\src\accounts\views.py", line 90, in get_context_data
+    ).order_by('turn_number')
+      ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NewTech\Desktop\barbershop\Barbershop\Lib\site-packages\django\db\models\query.py", line 1722, in order_by
+    obj.query.add_ordering(*field_names)
+  File "C:\Users\NewTech\Desktop\barbershop\Barbershop\Lib\site-packages\django\db\models\sql\query.py", line 2291, in add_ordering
+    self.names_to_path(item.split(LOOKUP_SEP), self.model._meta)
+  File "C:\Users\NewTech\Desktop\barbershop\Barbershop\Lib\site-packages\django\db\models\sql\query.py", line 1805, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'turn_number' into field. Choices are: barbershop, barbershop_id, booking_day, booking_services, created_at, customer, customer_email, customer_id, customer_name, customer_phone, history, id, messages, notes, notifications, queue_number, review, service, service_id, services, status, total_price, updated_at
+
+WARNING 2025-08-07 18:51:07,919 views 4708 13220 403 Error: User devil24px@gmail.com tried to access forbidden resource /bookings/merchant/5/
+INFO 2025-08-07 18:55:52,605 middleware 4708 2064 Google OAuth request: GET /accounts/google/login/
+INFO 2025-08-07 18:55:52,605 middleware 4708 2064 Host: bcf1c6090082.ngrok-free.app
+INFO 2025-08-07 18:55:52,612 middleware 4708 2064 User: Not available yet
+INFO 2025-08-07 18:55:52,637 middleware 4708 2064 Response status: 302
+INFO 2025-08-07 18:55:52,637 middleware 4708 2064 Redirect to: https://accounts.google.com/o/oauth2/v2/auth?client_id=239967388379-fia34m1m8lkarjduka4odnj10kde6ajn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fbcf1c6090082.ngrok-free.app%2Faccounts%2Fgoogle%2Flogin%2Fcallback%2F&scope=email+profile&response_type=code&state=XAhUDaAq9rW7R6Rv&access_type=online&code_challenge_method=S256&code_challenge=TW1DviEnd6nj4MPdYudpMW5NA-FZiZnG4EW_wQ7WvTE
+INFO 2025-08-07 18:55:56,269 middleware 4708 8500 Google OAuth request: GET /accounts/google/login/callback/
+INFO 2025-08-07 18:55:56,269 middleware 4708 8500 Host: bcf1c6090082.ngrok-free.app
+INFO 2025-08-07 18:55:56,269 middleware 4708 8500 User: Not available yet
+INFO 2025-08-07 18:55:57,312 middleware 4708 8500 Response status: 302
+INFO 2025-08-07 18:55:57,312 middleware 4708 8500 Redirect to: /
+INFO 2025-08-08 10:58:57,220 middleware 14320 12456 Google OAuth request: GET /accounts/google/login/
+INFO 2025-08-08 10:58:57,282 middleware 14320 12456 Host: 9d56735976a5.ngrok-free.app
+INFO 2025-08-08 10:58:57,282 middleware 14320 12456 User: Not available yet
+INFO 2025-08-08 10:58:57,305 middleware 14320 12456 Response status: 302
+INFO 2025-08-08 10:58:57,306 middleware 14320 12456 Redirect to: https://accounts.google.com/o/oauth2/v2/auth?client_id=239967388379-fia34m1m8lkarjduka4odnj10kde6ajn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2F9d56735976a5.ngrok-free.app%2Faccounts%2Fgoogle%2Flogin%2Fcallback%2F&scope=email+profile&response_type=code&state=oqegWzy6zsCouvBh&access_type=online&code_challenge_method=S256&code_challenge=MDXdNRcGhIQWtvLXTxIqA76Lo-no3gC2hwCRFLSpHGI
+INFO 2025-08-10 14:25:57,938 middleware 13180 7644 Google OAuth request: GET /accounts/google/login/
+INFO 2025-08-10 14:25:57,951 middleware 13180 7644 Host: 127.0.0.1:8000
+INFO 2025-08-10 14:25:57,951 middleware 13180 7644 User: Not available yet
+INFO 2025-08-10 14:25:57,961 middleware 13180 7644 Response status: 302
+INFO 2025-08-10 14:25:57,961 middleware 13180 7644 Redirect to: https://accounts.google.com/o/oauth2/v2/auth?client_id=239967388379-fia34m1m8lkarjduka4odnj10kde6ajn.apps.googleusercontent.com&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Faccounts%2Fgoogle%2Flogin%2Fcallback%2F&scope=profile+email&response_type=code&state=lwqQJ06q0RJQFAXG&access_type=online&code_challenge_method=S256&code_challenge=7ouvQMQe8mzj7UDF4qGsjk6BAPROdYWGT49N-Oo5jxo
+INFO 2025-08-10 14:54:20,927 middleware 13740 8260 Google OAuth request: GET /accounts/google/login/
+INFO 2025-08-10 14:54:20,939 middleware 13740 8260 Host: 97a8fcc5b22d.ngrok-free.app
+INFO 2025-08-10 14:54:20,940 middleware 13740 8260 User: Not available yet
+INFO 2025-08-10 14:54:20,975 middleware 13740 8260 Response status: 302
+INFO 2025-08-10 14:54:20,975 middleware 13740 8260 Redirect to: https://accounts.google.com/o/oauth2/v2/auth?client_id=239967388379-fia34m1m8lkarjduka4odnj10kde6ajn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2F97a8fcc5b22d.ngrok-free.app%2Faccounts%2Fgoogle%2Flogin%2Fcallback%2F&scope=email+profile&response_type=code&state=kwzdguZpUioidruw&access_type=online&code_challenge_method=S256&code_challenge=i_IagO4jZNDsgqZm8-nP7atqfhPzWTtdvb6Xa1HA9-g
+INFO 2025-08-10 14:54:25,990 middleware 13740 14680 Google OAuth request: GET /accounts/google/login/callback/
+INFO 2025-08-10 14:54:25,991 middleware 13740 14680 Host: 97a8fcc5b22d.ngrok-free.app
+INFO 2025-08-10 14:54:25,993 middleware 13740 14680 User: Not available yet
+INFO 2025-08-10 14:54:27,385 middleware 13740 14680 Response status: 302
+INFO 2025-08-10 14:54:27,385 middleware 13740 14680 Redirect to: /
+INFO 2025-08-10 19:49:34,705 middleware 5836 9776 Google OAuth request: GET /accounts/google/login/
+INFO 2025-08-10 19:49:34,725 middleware 5836 9776 Host: 97a8fcc5b22d.ngrok-free.app
+INFO 2025-08-10 19:49:34,725 middleware 5836 9776 User: Not available yet
+INFO 2025-08-10 19:49:34,750 middleware 5836 9776 Response status: 302
+INFO 2025-08-10 19:49:34,750 middleware 5836 9776 Redirect to: https://accounts.google.com/o/oauth2/v2/auth?client_id=239967388379-fia34m1m8lkarjduka4odnj10kde6ajn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2F97a8fcc5b22d.ngrok-free.app%2Faccounts%2Fgoogle%2Flogin%2Fcallback%2F&scope=email+profile&response_type=code&state=BOk6CCfeMDxMOp8L&access_type=online&code_challenge_method=S256&code_challenge=NaPxHM3SHNtVXsZcH-y8Q0PI26Dg07_kLWC26pJNVmQ
+INFO 2025-08-10 19:50:02,191 middleware 5836 15416 Google OAuth request: GET /accounts/google/login/callback/
+INFO 2025-08-10 19:50:02,191 middleware 5836 15416 Host: 97a8fcc5b22d.ngrok-free.app
+INFO 2025-08-10 19:50:02,191 middleware 5836 15416 User: Not available yet
+INFO 2025-08-10 19:50:03,850 middleware 5836 15416 Response status: 302
+INFO 2025-08-10 19:50:03,850 middleware 5836 15416 Redirect to: /accounts/inactive/
+INFO 2025-08-10 19:50:15,825 middleware 5836 15036 Google OAuth request: GET /accounts/google/login/
+INFO 2025-08-10 19:50:15,825 middleware 5836 15036 Host: 97a8fcc5b22d.ngrok-free.app
+INFO 2025-08-10 19:50:15,825 middleware 5836 15036 User: Not available yet
+INFO 2025-08-10 19:50:15,841 middleware 5836 15036 Response status: 302
+INFO 2025-08-10 19:50:15,841 middleware 5836 15036 Redirect to: https://accounts.google.com/o/oauth2/v2/auth?client_id=239967388379-fia34m1m8lkarjduka4odnj10kde6ajn.apps.googleusercontent.com&redirect_uri=https%3A%2F%2F97a8fcc5b22d.ngrok-free.app%2Faccounts%2Fgoogle%2Flogin%2Fcallback%2F&scope=email+profile&response_type=code&state=ZTTWfVQRM3PWJ5NL&access_type=online&code_challenge_method=S256&code_challenge=uaPKA76tKn9Z0_HkNnW4Vq8khxQcLetl_XdhkClE7LA
+INFO 2025-08-10 19:50:26,690 middleware 5836 7644 Google OAuth request: GET /accounts/google/login/callback/
+INFO 2025-08-10 19:50:26,690 middleware 5836 7644 Host: 97a8fcc5b22d.ngrok-free.app
+INFO 2025-08-10 19:50:26,690 middleware 5836 7644 User: Not available yet
+INFO 2025-08-10 19:50:28,050 middleware 5836 7644 Response status: 302
+INFO 2025-08-10 19:50:28,050 middleware 5836 7644 Redirect to: /

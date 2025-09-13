@@ -35,32 +35,55 @@
         gap: 15px;
         justify-content: center;
         flex-wrap: wrap;
+        margin-top: 30px;
     }
     .btn-activation {
-        padding: 12px 25px;
-        border-radius: 8px;
+        display: inline-block;
+        padding: 16px 30px;
+        border-radius: 12px;
         text-decoration: none;
-        font-weight: 500;
+        font-weight: 600;
+        font-size: 1rem;
+        text-align: center;
+        min-width: 180px;
         transition: all 0.3s ease;
+        cursor: pointer;
+        border: none;
+        outline: none;
+        position: relative;
+        overflow: hidden;
+    }
+    .btn-activation:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.3);
     }
     .btn-primary-activation {
-        background: #d4af37;
-        color: white;
+        background: linear-gradient(135deg, #d4af37 0%, #f4d03f 50%, #d4af37 100%);
+        color: white !important;
         border: 2px solid #d4af37;
+        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
     }
     .btn-primary-activation:hover {
-        background: #b8941f;
+        background: linear-gradient(135deg, #b8941f 0%, #d4af37 50%, #b8941f 100%);
         border-color: #b8941f;
-        color: white;
+        color: white !important;
+        text-decoration: none;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
     }
     .btn-secondary-activation {
-        background: transparent;
-        color: #6c757d;
-        border: 2px solid #6c757d;
+        background: white;
+        color: #6c757d !important;
+        border: 2px solid #e0e0e0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
     .btn-secondary-activation:hover {
-        background: #6c757d;
-        color: white;
+        background: #f8f9fa;
+        color: #495057 !important;
+        border-color: #d4af37;
+        text-decoration: none;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 </style>
 {% endblock %}
@@ -103,4 +126,58 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // تحسين تفاعل الأزرار
+    const activationButtons = document.querySelectorAll('.btn-activation');
+    
+    activationButtons.forEach(button => {
+        // إضافة تأثير النقر
+        button.addEventListener('click', function(e) {
+            // التأكد من أن الرابط يعمل
+            const href = this.getAttribute('href');
+            if (href && href !== '#') {
+                // إضافة تأثير بصري عند النقر
+                this.style.transform = 'translateY(0px)';
+                setTimeout(() => {
+                    window.location.href = href;
+                }, 100);
+            }
+        });
+        
+        // إضافة تأثيرات الماوس
+        button.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        button.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0px)';
+        });
+        
+        // إضافة دعم لوحة المفاتيح
+        button.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.click();
+            }
+        });
+    });
+    
+    // إضافة رسالة تأكيد لإعادة الإرسال
+    const resendButton = document.querySelector('a[href*="resend-activation"]');
+    if (resendButton) {
+        resendButton.addEventListener('click', function(e) {
+            const confirmed = confirm('هل تريد إعادة إرسال كود التفعيل؟');
+            if (!confirmed) {
+                e.preventDefault();
+            }
+        });
+    }
+    
+    console.log('Activation page loaded successfully');
+});
+</script>
 {% endblock %}

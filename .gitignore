@@ -3,6 +3,8 @@
 
 # Django
 db.sqlite3
+ngrok.exe
+.ngrok.exe.old
 *.log
 
 # Python

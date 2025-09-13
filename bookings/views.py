@@ -135,19 +135,22 @@ class CustomerBookingListView(LoginRequiredMixin, ListView):
         
         current_turns_info = []
         for shop in user_shops:
+            # Get today's confirmed bookings only
             confirmed_today = Booking.objects.filter(
                 barbershop=shop,
                 booking_day=today,
                 status='confirmed'
-            )
-            print(f"[DEBUG] shop={shop.name}({shop.id}) | today={today} | confirmed_today_count={confirmed_today.count()} | ids={[b.id for b in confirmed_today]}")
-            # استخدام الدور المحفوظ في المحل لضمان التطابق
+            ).order_by('queue_number')
+            
+            # Get the highest turn number from today's confirmed bookings
+            current_turn = confirmed_today.last()
+            current_turn_number = current_turn.queue_number if current_turn else None
             
             # أضف shop_id دائماً حتى لو لم يوجد دور حالي
             current_turns_info.append({
                 'shop_name': shop.name,
                 'shop_id': shop.id,
-                'turn_number': shop.current_turn_number if shop.current_turn_number > 0 else None
+                'turn_number': current_turn_number
             })
 
         context['current_turns_info'] = current_turns_info

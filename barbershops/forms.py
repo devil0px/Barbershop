@@ -2,6 +2,22 @@ from django import forms
 from .models import Barbershop, Service, ServiceImage
 import json
 
+class BarbershopCreateForm(forms.ModelForm):
+    class Meta:
+        model = Barbershop
+        fields = ['name', 'description', 'phone_number', 'address', 'image', 'latitude', 'longitude', 'opening_time', 'closing_time']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'phone_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'address': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'image': forms.FileInput(attrs={'class': 'form-control'}),
+            'opening_time': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
+            'closing_time': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
+            'latitude': forms.HiddenInput(),
+            'longitude': forms.HiddenInput(),
+        }
+
 class BarbershopSettingsForm(forms.ModelForm):
     """نموذج إعدادات محل الحلاقة"""
     class Meta:

@@ -82,8 +82,16 @@ class BarberDashboardView(LoginRequiredMixin, TemplateView):
             ).select_related('customer', 'service').order_by('-created_at')[:5]
             context['recent_bookings'] = recent_bookings
 
-            # Get current turn number - استخدام الدور المحفوظ في المحل لضمان التطابق
-            context['current_turn_number'] = primary_shop.current_turn_number if primary_shop.current_turn_number > 0 else None
+            # Get current turn number based on today's confirmed bookings only
+            today_confirmed_bookings = Booking.objects.filter(
+                barbershop=primary_shop,
+                booking_day=today,
+                status='confirmed'
+            ).order_by('queue_number')
+        
+            # Get the highest turn number from today's confirmed bookings
+            current_turn = today_confirmed_bookings.last()
+            context['current_turn_number'] = current_turn.queue_number if current_turn else None
 
             # Get finished bookings count for today
             context['finished_bookings_count'] = Booking.objects.filter(

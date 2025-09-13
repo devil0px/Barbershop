@@ -87,11 +87,34 @@ class MapsManager {
         this.addMarker(lat, lng, 'الموقع المحدد');
 
         // Update form inputs
+        console.log('=== MAPS.JS SELECT LOCATION DEBUG ===');
+        console.log('Received coordinates:', { lat, lng });
+        
         const latInput = document.getElementById('id_latitude');
         const lngInput = document.getElementById('id_longitude');
         
-        if (latInput) latInput.value = lat.toFixed(6);
-        if (lngInput) lng.value = lng.toFixed(6);
+        console.log('Found latitude input:', !!latInput, latInput);
+        console.log('Found longitude input:', !!lngInput, lngInput);
+        
+        if (latInput) {
+            const latValue = lat.toFixed(6);
+            latInput.value = latValue;
+            console.log('Set latitude value:', latValue, 'Current value:', latInput.value);
+        } else {
+            console.error('Latitude input field not found!');
+        }
+        
+        if (lngInput) {
+            const lngValue = lng.toFixed(6);
+            lngInput.value = lngValue;
+            console.log('Set longitude value:', lngValue, 'Current value:', lngInput.value);
+        } else {
+            console.error('Longitude input field not found!');
+        }
+        
+        // Double check the values after setting
+        console.log('Final check - Lat field value:', latInput ? latInput.value : 'NOT FOUND');
+        console.log('Final check - Lng field value:', lngInput ? lngInput.value : 'NOT FOUND');
 
         // Show success message
         window.NotificationManager?.success('تم تحديد الموقع بنجاح');

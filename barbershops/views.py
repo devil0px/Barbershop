@@ -8,10 +8,14 @@ from django.db import models
 from django.utils import timezone
 from bookings.models import Booking
 from django.http import Http404, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 import logging
+import json
 from .models import Barbershop, Service
-from .forms import ServiceForm
+from .forms import ServiceForm, BarbershopCreateForm
 from reviews.models import Review
+from .location_utils import get_nearest_barbershops, format_distance
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +58,114 @@ class BarbershopListView(ListView):
             avg_rating=Avg('reviews__rating'),
             reviews_count=models.Count('reviews', filter=models.Q(reviews__is_approved=True))
         )
+
+
+class NearbyBarbershopsView(ListView):
+    """
+    عرض الصالونات القريبة من موقع المستخدم
+    """
+    model = Barbershop
+    template_name = 'barbershops/nearby.html'
+    context_object_name = 'barbershops_with_distance'
+    
+    def get_queryset(self):
+        # إذا لم يتم تمرير إحداثيات، إرجاع قائمة فارغة
+        user_lat = self.request.GET.get('lat')
+        user_lon = self.request.GET.get('lon')
+        
+        if not user_lat or not user_lon:
+            return []
+        
+        try:
+            user_lat = float(user_lat)
+            user_lon = float(user_lon)
+            
+            # الحصول على أقرب الصالونات
+            return get_nearest_barbershops(user_lat, user_lon)
+            
+        except (ValueError, TypeError):
+            return []
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_location'] = {
+            'lat': self.request.GET.get('lat'),
+            'lon': self.request.GET.get('lon')
+        }
+        return context
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class NearbyBarbershopsAPIView(ListView):
+    """
+    API لإرجاع الصالونات القريبة بصيغة JSON
+    """
+    model = Barbershop
+    
+    def post(self, request, *args, **kwargs):
+        try:
+            data = json.loads(request.body)
+            user_lat = float(data.get('latitude'))
+            user_lon = float(data.get('longitude'))
+            max_distance = float(data.get('max_distance', 50))  # افتراضي 50 كم
+            
+            # الحصول على أقرب الصالونات
+            nearby_barbershops = get_nearest_barbershops(user_lat, user_lon, max_distance)
+            
+            # تحويل البيانات إلى JSON
+            barbershops_data = []
+            for item in nearby_barbershops:
+                barbershop = item['barbershop']
+                distance = item['distance']
+                
+                # حساب متوسط التقييم
+                avg_rating = barbershop.reviews.filter(
+                    is_approved=True
+                ).aggregate(Avg('rating'))['rating__avg'] or 0
+                
+                barbershops_data.append({
+                    'id': barbershop.id,
+                    'name': barbershop.name,
+                    'description': barbershop.description,
+                    'address': barbershop.address,
+                    'phone_number': barbershop.phone_number,
+                    'image_url': barbershop.image.url if barbershop.image else None,
+                    'latitude': float(barbershop.latitude),
+                    'longitude': float(barbershop.longitude),
+                    'distance': distance,
+                    'distance_text': format_distance(distance),
+                    'avg_rating': round(avg_rating, 1),
+                    'reviews_count': barbershop.reviews.filter(is_approved=True).count(),
+                    'services_count': barbershop.services.filter(is_active=True).count(),
+                    'opening_time': barbershop.opening_time.strftime('%H:%M') if barbershop.opening_time else None,
+                    'closing_time': barbershop.closing_time.strftime('%H:%M') if barbershop.closing_time else None,
+                    'detail_url': f'/barbershops/{barbershop.id}/'
+                })
+            
+            return JsonResponse({
+                'success': True,
+                'barbershops': barbershops_data,
+                'total_count': len(barbershops_data),
+                'user_location': {
+                    'latitude': user_lat,
+                    'longitude': user_lon
+                }
+            })
+            
+        except (ValueError, TypeError, json.JSONDecodeError) as e:
+            return JsonResponse({
+                'success': False,
+                'error': 'بيانات غير صحيحة',
+                'details': str(e)
+            }, status=400)
+        
+        except Exception as e:
+            logger.error(f"Error in NearbyBarbershopsAPIView: {str(e)}")
+            return JsonResponse({
+                'success': False,
+                'error': 'حدث خطأ في الخادم'
+            }, status=500)
+
 
 class BarbershopDetailView(DetailView):
     model = Barbershop
@@ -105,8 +217,8 @@ class BarbershopDetailView(DetailView):
 
 class BarbershopCreateView(LoginRequiredMixin, CreateView):
     model = Barbershop
+    form_class = BarbershopCreateForm
     template_name = 'barbershops/create.html'
-    fields = ['name', 'description', 'address', 'latitude', 'longitude', 'image', 'phone_number', 'opening_time', 'closing_time']
 
     def get(self, request, *args, **kwargs):
         # التحقق من عدد محلات الحلاقة للمستخدم
