@@ -122,11 +122,23 @@ WSGI_APPLICATION = 'project.wsgi.application'
 ASGI_APPLICATION = 'project.asgi.application'
 
 # Use in-memory channel layer for development
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
+# Channels
+# Use Redis as the channel layer in production, otherwise use in-memory for development
+if 'REDIS_URL' in os.environ:
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                "hosts": [env('REDIS_URL')],
+            },
+        },
     }
-}
+else:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer"
+        }
+    }
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
@@ -140,14 +152,16 @@ LOGOUT_REDIRECT_URL = 'home:index'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# Database
+# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+# Use dj-database-url to parse the DATABASE_URL environment variable for production,
+# falling back to SQLite for local development.
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-        'OPTIONS': {
-            'timeout': 20,  # Simple timeout
-        },
-    }
+    'default': env.db('DATABASE_URL', default=f'sqlite:///{BASE_DIR / "db.sqlite3"}')
+}
+# Add timeout option, compatible with both SQLite and PostgreSQL
+DATABASES['default']['OPTIONS'] = {
+    'timeout': 20,
 }
 
 
