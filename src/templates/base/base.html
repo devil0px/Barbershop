@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Barber Shop - أفضل صالون حلاقة{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts - Cairo for Arabic -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{% static 'images/logo.svg' %}">
+    
+    {% block extra_css %}{% endblock %}
+    
+    <!-- CSRF Token Meta -->
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    
+    <!-- App Configuration -->
+    {% if user.is_authenticated %}
+    <meta name="user-authenticated" content="true">
+    {% endif %}
+    
+    {% if settings.DEBUG %}
+    <meta name="app-debug" content="true">
+    {% endif %}
+</head>
+<body data-authenticated="{% if user.is_authenticated %}true{% else %}false{% endif %}" data-debug="{% if settings.DEBUG %}true{% else %}false{% endif %}">
+    <!-- New Navigation for Mobile -->
+    <nav class="navbar navbar-dark bg-dark fixed-top d-lg-none mobile-nav">
+        <div class="container-fluid">
+            <!-- Top Row: Logo & User Icon -->
+            <div class="mobile-nav-top w-100 d-flex justify-content-between align-items-center">
+                <a class="navbar-brand" href="{% url 'home:index' %}">
+                    <i class="fas fa-cut"></i> Barber Shop
+                </a>
+                {% if user.is_authenticated %}
+                    <div class="d-flex align-items-center">
+                        <a class="nav-link user-icon me-3" href="{% url 'accounts:profile' %}">
+                            <i class="fas fa-user"></i>
+                        </a>
+
+                    </div>
+                {% else %}
+                    <a class="nav-link user-icon" href="{% url 'accounts:login' %}">
+                        <i class="fas fa-sign-in-alt"></i>
+                    </a>
+                {% endif %}
+            </div>
+            <!-- Bottom Row: Links -->
+            <!-- Bottom Row: Links -->
+            <div class="mobile-nav-bottom w-100 py-2">
+                <ul class="navbar-nav d-flex flex-row justify-content-around w-100">
+                    <li class="nav-item text-center">
+                        <a class="nav-link" href="{% url 'home:index' %}" title="الرئيسية">
+                            <i class="fas fa-home d-block"></i>
+                            <small>الرئيسية</small>
+                        </a>
+                    </li>
+                    <li class="nav-item text-center">
+                        <a class="nav-link" href="{% url 'barbershops:list' %}" title="المحلات">
+                            <i class="fas fa-store d-block"></i>
+                            <small>المحلات</small>
+                        </a>
+                    </li>
+                    <li class="nav-item text-center">
+                        <a class="nav-link find-nearby-btn" href="#" title="الأقرب لي">
+                            <i class="fas fa-map-marker-alt d-block"></i>
+                            <small>الأقرب</small>
+                        </a>
+                    </li>
+                    {% if user.is_authenticated %}
+                        {% if user.user_type == 'barber' %}
+                        <li class="nav-item text-center">
+                            <a class="nav-link" href="{% url 'accounts:barber_dashboard' %}" title="لوحة التحكم">
+                                <i class="fas fa-tachometer-alt d-block"></i>
+                                <small>لوحة التحكم</small>
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item text-center">
+                            <a class="nav-link" href="{% url 'bookings:list' %}" title="حجوزاتي">
+                                <i class="fas fa-calendar-check d-block"></i>
+                                <small>حجوزاتي</small>
+                            </a>
+                        </li>
+                        {% endif %}
+
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Original Navigation for Desktop -->
+    <nav class="navbar navbar-dark bg-dark fixed-top d-none d-lg-block">
+        <div class="container-fluid">
+            <div class="w-100 d-flex flex-lg-row justify-content-between align-items-center">
+                <a class="navbar-brand" href="{% url 'home:index' %}">
+                    <i class="fas fa-cut"></i> Barber Shop
+                </a>
+                <ul class="navbar-nav flex-lg-row text-center">
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'home:index' %}">الرئيسية</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'barbershops:list' %}">محلات الحلاقة</a></li>
+                </ul>
+                <ul class="navbar-nav flex-lg-row align-items-center">
+                    {% if user.is_authenticated %}
+                        <!-- Notifications -->
+                        <li class="nav-item dropdown me-3">
+                            <a class="nav-link position-relative" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-bell"></i>
+                                <span id="notificationBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
+                                    0
+                                </span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown" style="width: 350px; max-height: 400px; overflow-y: auto;">
+                                <li><h6 class="dropdown-header">الإشعارات</h6></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <div id="notificationsContainer">
+                                    <li><a class="dropdown-item text-center text-muted" href="#">جاري التحميل...</a></li>
+                                </div>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-center" href="{% url 'notifications:list' %}"><i class="fas fa-list me-2"></i>عرض جميع الإشعارات</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'accounts:profile' %}"><i class="fas fa-user"></i> {{ user.username }}</a></li>
+                        {% if user.user_type == 'barber' %}
+                            <li class="nav-item"><a class="nav-link" href="{% url 'accounts:barber_dashboard' %}">لوحة التحكم</a></li>
+                        {% else %}
+                            <li class="nav-item"><a class="nav-link" href="{% url 'bookings:list' %}">حجوزاتي</a></li>
+                        {% endif %}
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'accounts:login' %}">تسجيل الدخول</a></li>
+                        <li class="nav-item ms-2"><a class="btn btn-sm btn-primary" href="{% url 'accounts:register' %}" style="background-color: #d4af37; color: #333; padding: 6px 15px; border-radius: 20px;">إنشاء حساب</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+        <div class="container mt-5 pt-4">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Bootstrap JS Bundle (includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.querySelectorAll('.find-nearby-btn').forEach(function(button) {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        var lat = position.coords.latitude;
+                        var lon = position.coords.longitude;
+                        window.location.href = `{% url 'barbershops:nearby' %}?lat=${lat}&lon=${lon}`;
+                    }, function(error) {
+                        console.error('Error getting location:', error);
+                        alert('لا يمكن الوصول إلى موقعك. يرجى تفعيل خدمات الموقع في متصفحك والموافقة على الطلب.');
+                    });
+                } else {
+                    alert('متصفحك لا يدعم خدمات تحديد الموقع.');
+                }
+            });
+        });
+    </script>
+
+    <!-- Core JavaScript Modules -->
+    <script src="{% static 'js/modules/notifications.js' %}"></script>
+    <script src="{% static 'js/modules/forms.js' %}"></script>
+    <script src="{% static 'js/modules/auth.js' %}"></script>
+    
+    <!-- Main Application JS -->
+    <script src="{% static 'js/main.js' %}"></script>
+
+    <!-- Page-specific JS -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

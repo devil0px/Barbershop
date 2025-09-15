@@ -1,0 +1,209 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}حجز موعد جديد{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/bookings.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="booking-hero">
+    <div class="container">
+        <h1>حجز موعد جديد</h1>
+        <p>احجز موعدك الآن واستمتع بأفضل خدمات الحلاقة</p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="booking-form-container">
+                <!-- Form Errors -->
+                {% if form.errors %}
+                    <div class="alert alert-danger mb-4">
+                        <h6 class="alert-heading">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            يرجى تصحيح الأخطاء التالية:
+                        </h6>
+                        <ul class="mb-0">
+                            {% for field, errors in form.errors.items %}
+                                {% for error in errors %}
+                                    <li><strong>{{ field }}:</strong> {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <div class="alert-info-custom text-center">
+                    <strong>تنويه:</strong> نظام الحجز يعمل بالدور فقط.<br>
+                    سيتم حجز دورك لليوم التالي تلقائياً.<br>
+                    عند الحجز ستعرف رقم دورك وعدد الأشخاص قبلك.
+                </div>
+                <form method="post" novalidate data-booking-form data-ajax="false">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% if user.is_authenticated %}
+                        <div class="mb-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
+                            <h5 class="mb-3">معلومات الحجز</h5>
+                            <p class="mb-1"><strong>الاسم:</strong> {{ user.get_full_name|default:user.username }}</p>
+                            {% if user.profile.phone_number %}
+                                <p class="mb-0"><strong>رقم الهاتف:</strong> {{ user.profile.phone_number }}</p>
+                            {% endif %}
+                            {% if user.email %}
+                                <p class="mb-0"><strong>البريد الإلكتروني:</strong> {{ user.email }}</p>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <label class="form-label">{{ form.customer_name.label }}</label>
+                                {{ form.customer_name }}
+                                {% if form.customer_name.errors %}<div class="invalid-feedback d-block">{{ form.customer_name.errors.as_text }}</div>{% endif %}
+                            </div>
+                        </div>
+                        <hr class="my-4">
+                    {% endif %}
+                    
+                    <!-- Hidden form fields -->
+                    <div style="display: none;">
+                        {{ form.barbershop }}
+                        {{ form.service }}
+                        {{ form.customer_name }}
+                        {{ form.customer_phone }}
+                    </div>
+
+                        {% if barbershop %}
+                            <!-- عرض معلومات المحل المحدد فقط -->
+                            <div class="col-12 mb-4">
+                                <h5 class="mb-3">المحل المختار</h5>
+                                <div class="alert alert-info">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-2 text-center">
+                                            {% if barbershop.image %}
+                                                <img src="{{ barbershop.image.url }}" alt="{{ barbershop.name }}" 
+                                                     style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
+                                            {% else %}
+                                                <i class="fas fa-store" style="font-size: 2.5rem; color: #007bff;"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div class="col-md-10">
+                                            <h5 class="mb-1">{{ barbershop.name }}</h5>
+                                            <p class="mb-1"><i class="fas fa-map-marker-alt"></i> {{ barbershop.address }}</p>
+                                            <div class="d-flex gap-3">
+                                                <small><i class="fas fa-clock"></i> {{ barbershop.opening_time|default:"09:00" }} - {{ barbershop.closing_time|default:"20:00" }}</small>
+                                                {% if barbershop.phone_number %}
+                                                    <small><i class="fas fa-phone"></i> {{ barbershop.phone_number }}</small>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <!-- إذا لم يتم تحديد محل، اعرض جميع المحلات -->
+                            <div class="col-12 mb-4">
+                                <h5 class="mb-3">اختر الصالون</h5>
+                                <div class="row g-3" id="barbershop-selection">
+                                    {% for shop in barbershops %}
+                                        <div class="col-md-4">
+                                            <div class="card selection-card" data-value="{{ shop.pk }}">
+                                                <div class="card-body text-center">
+                                                    <h6 class="card-title">{{ shop.name }}</h6>
+                                                    <p class="card-text"><small>{{ shop.address }}</small></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div class="col-12 mb-4">
+                            <h5 class="mb-3">اختر الخدمة</h5>
+                            
+                            <!-- معلومات للتحقق -->
+                            {% if debug_info %}
+                                <div class="alert alert-info small mb-3">
+                                    <strong>معلومات التحقق:</strong>
+                                    المحل: {{ debug_info.barbershop_id }} | 
+                                    عدد الخدمات: {{ debug_info.services_count }}
+                                </div>
+                            {% endif %}
+                            
+                            {% if services %}
+                                <div class="row g-3" id="service-selection">
+                                    {% for service in services %}
+                                        <div class="col-md-6">
+                                            <div class="card selection-card" data-value="{{ service.pk }}">
+                                                <div class="card-body">
+                                                    <div class="row align-items-center">
+                                                        <div class="col-3 text-center">
+                                                            {% if service.image %}
+                                                                <img src="{{ service.image.url }}" alt="{{ service.name }}" 
+                                                                     style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+                                                            {% else %}
+                                                                <i class="fas fa-cut" style="font-size: 2rem; color: #d4af37;"></i>
+                                                            {% endif %}
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <h6 class="card-title mb-1">{{ service.name }}</h6>
+                                                            {% if service.description %}
+                                                                <p class="text-muted small mb-1">{{ service.description|truncatewords:8 }}</p>
+                                                            {% endif %}
+                                                            <small class="text-muted">
+                                                                <i class="fas fa-clock"></i> {{ service.duration }} دقيقة
+                                                                <br>
+                                                                <i class="fas fa-store"></i> {{ service.barbershop.name }}
+                                                            </small>
+                                                        </div>
+                                                        <div class="col-3 text-center">
+                                                            <div class="fw-bold" style="color: #d4af37; font-size: 1.2rem;">
+                                                                {{ service.price }} جنيه
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-warning text-center">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    لا توجد خدمات متاحة في هذا المحل حالياً
+                                </div>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                    
+                    
+                    
+                    <div class="text-center">
+                        <button type="submit" style="background: #d4af37; color: #333; border: none; padding: 15px 40px; border-radius: 25px; font-weight: 600; font-size: 1.1rem;">
+                            <i class="fas fa-calendar-check"></i> تأكيد الحجز
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+    <!-- Booking-specific JavaScript -->
+    <script src="{% static 'js/modules/booking.js' %}"></script>
+{% endblock %}
+{% endblock %}

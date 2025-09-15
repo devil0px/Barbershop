@@ -1,0 +1,261 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}حجوزاتي - Barber Shop{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/bookings.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="page-header">
+        <h1>حجوزاتي</h1>
+        <p>إدارة حجوزاتك في محلات الحلاقة</p>
+    </div>
+
+    {% if bookings %}
+        <div class="row mb-4">
+            {% for turn_info in current_turns_info %}
+                <div class="col-lg-6 col-xl-4 mb-3">
+                    <div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <div class="card-body text-center text-white py-3">
+                            <div class="d-flex align-items-center justify-content-center mb-2">
+                                <i class="fas fa-user-clock me-2" style="color: #ffd700;"></i>
+                                <h6 class="card-title mb-0 fw-bold">{{ turn_info.shop_name }}</h6>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-center">
+                                <span class="text-white-50 me-2 small">الدور الحالي:</span>
+                                <span class="badge bg-light text-dark fs-5 fw-bold px-3 py-2" id="current-turn-number-{{ forloop.counter }}" style="border-radius: 20px;">
+                                    {% if turn_info.turn_number %}
+                                        #{{ turn_info.turn_number }}
+                                    {% else %}
+                                        --
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="row">
+            {% for booking in bookings %}
+                <div class="col-12 mb-3">
+                    {% if booking.is_today %}
+                        {% if booking.status == 'pending' or booking.status == 'confirmed' %}
+                        {% for turn_info in current_turns_info %}
+                            {% if turn_info.shop_id == booking.barbershop.id %}
+                                {% if turn_info.turn_number %}
+                                    <div class="alert alert-info mb-2 py-2" role="alert">
+                                        <i class="fas fa-user-clock me-2"></i> <strong>الدور الحالي بالمحل:</strong> <span class="fw-bold fs-5">{{ turn_info.turn_number }}</span>
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-secondary mb-2 py-2" role="alert">
+                                        <i class="fas fa-hourglass-start me-2"></i> <strong>الدور الحالي بالمحل:</strong> <span class="fw-bold">لم يبدأ بعد</span>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        {% endif %}
+                    {% endif %}
+                    
+                    {% include 'bookings/_booking_card.html' with booking=booking %}
+
+                    <!-- Cancel Booking Modal -->
+                    <div class="modal fade" id="cancelBookingModal-{{ booking.id }}" tabindex="-1" aria-labelledby="cancelBookingModalLabel-{{ booking.id }}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="cancelBookingModalLabel-{{ booking.id }}">تأكيد الإلغاء</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    هل أنت متأكد أنك تريد إلغاء هذا الحجز؟
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">تراجع</button>
+                                    <form action="{% url 'bookings:cancel' booking.id %}" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger">نعم، قم بالإلغاء</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-calendar-times fa-4x text-muted mb-3"></i>
+            <h4>لا توجد لديك حجوزات حالية.</h4>
+            <p>يمكنك حجز خدمة جديدة من خلال تصفح محلات الحلاقة.</p>
+            <a href="{% url 'barbershops:list' %}" class="btn btn-primary mt-3">تصفح المحلات</a>
+        </div>
+    {% endif %}
+</div>
+<!-- RealTime WebSocket Integration (Customer) -->
+<script>
+    // إعداد بيانات المحلات بطريقة آمنة
+    var barbershops = [];
+</script>
+
+{% for turn_info in current_turns_info %}
+<script>
+    barbershops.push({
+        id: "{{ turn_info.shop_name|slugify|escapejs }}",
+        barbershopId: "{{ turn_info.shop_id|escapejs }}",
+        elId: "current-turn-number-{{ forloop.counter }}",
+        lastTurn: "{{ turn_info.turn_number|default:'0'|escapejs }}"
+    });
+</script>
+{% endfor %}
+
+<script>
+    
+    // تنبيه صوتي بسيط
+    function playDing() {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const o = ctx.createOscillator();
+            o.type = 'sine';
+            o.frequency.value = 880;
+            o.connect(ctx.destination);
+            o.start();
+            setTimeout(() => {
+                o.stop();
+                ctx.close();
+            }, 200);
+        } catch (e) {
+            console.log('Audio not supported');
+        }
+    }
+    
+    // تنبيه مرئي
+    function showNotification(msg) {
+        const n = document.createElement('div');
+        n.className = 'alert alert-success position-fixed top-0 end-0 m-4 shadow';
+        n.style.zIndex = 9999;
+        n.innerHTML = `<i class="fas fa-bell me-2"></i>${msg}`;
+        document.body.appendChild(n);
+        setTimeout(() => n.remove(), 3500);
+    }
+    
+    // إشعار متصفح
+    function browserNotify(msg) {
+        if (window.Notification && Notification.permission === "granted") {
+            new Notification(msg);
+        }
+    }
+    // طلب إذن الإشعارات عند تحميل الصفحة
+    if (window.Notification && Notification.permission !== "granted") {
+        Notification.requestPermission();
+    }
+    barbershops.forEach(function(shop) {
+        if (!shop.barbershopId) return; // تجاهل المحلات بدون معرف
+        const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+        const wsUrl = protocol + "://" + window.location.host + "/ws/barbershop/" + shop.barbershopId + "/";
+        const socket = new WebSocket(wsUrl);
+        socket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            if (typeof data.current_turn_number !== "undefined") {
+                const el = document.getElementById(shop.elId);
+                if (el && el.innerText !== String(data.current_turn_number)) {
+                    el.innerText = data.current_turn_number !== null ? data.current_turn_number : '--';
+                    playDing();
+                    showNotification('تم تحديث الدور الحالي في محل ' + shop.id.replace(/-/g,' '));
+                    browserNotify('تم تحديث الدور الحالي في محل ' + shop.id.replace(/-/g,' '));
+                }
+            }
+        };
+    });
+</script>
+
+<!-- Modal لحذف الحجز -->
+{% for booking in bookings %}
+    {% if booking.status == 'pending' and booking.customer == request.user %}
+        <!-- Modal حذف الحجز -->
+        <div class="modal fade" id="deleteBookingModal-{{ booking.id }}" tabindex="-1" aria-labelledby="deleteBookingModalLabel-{{ booking.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title" id="deleteBookingModalLabel-{{ booking.id }}">
+                            <i class="fas fa-trash me-2"></i>حذف الحجز
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-exclamation-triangle text-danger" style="font-size: 3rem;"></i>
+                        </div>
+                        <h5 class="mb-3">هل أنت متأكد من حذف هذا الحجز؟</h5>
+                        <p class="text-muted mb-2">
+                            <strong>المحل:</strong> {{ booking.barbershop.name }}<br>
+                            <strong>التاريخ:</strong> {{ booking.booking_day|date:"d/m/Y" }}<br>
+                            <strong>السعر:</strong> {{ booking.total_price }} جنيه
+                        </p>
+                        <div class="alert alert-warning" role="alert">
+                            <i class="fas fa-info-circle me-1"></i>
+                            <strong>تحذير:</strong> لن يمكن استرداد الحجز بعد الحذف!
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i>إلغاء
+                        </button>
+                        <form method="post" action="{% url 'bookings:delete' booking.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-1"></i>حذف نهائياً
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal إلغاء الحجز -->
+        <div class="modal fade" id="cancelBookingModal-{{ booking.id }}" tabindex="-1" aria-labelledby="cancelBookingModalLabel-{{ booking.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-warning text-dark">
+                        <h5 class="modal-title" id="cancelBookingModalLabel-{{ booking.id }}">
+                            <i class="fas fa-times-circle me-2"></i>إلغاء الحجز
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-question-circle text-warning" style="font-size: 3rem;"></i>
+                        </div>
+                        <h5 class="mb-3">هل تريد إلغاء هذا الحجز؟</h5>
+                        <p class="text-muted mb-2">
+                            <strong>المحل:</strong> {{ booking.barbershop.name }}<br>
+                            <strong>التاريخ:</strong> {{ booking.booking_day|date:"d/m/Y" }}<br>
+                            <strong>السعر:</strong> {{ booking.total_price }} جنيه
+                        </p>
+                        <div class="alert alert-info" role="alert">
+                            <i class="fas fa-info-circle me-1"></i>
+                            سيتم تغيير حالة الحجز إلى "ملغي" ويمكن للمحل رؤية السبب.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i>إغلاق
+                        </button>
+                        <form method="post" action="{% url 'bookings:cancel' booking.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-warning text-dark">
+                                <i class="fas fa-times-circle me-1"></i>إلغاء الحجز
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endfor %}
+
+{% endblock %}

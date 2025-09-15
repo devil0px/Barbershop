@@ -1,0 +1,78 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}إدارة خدمات {{ barbershop.name }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/management.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="management-header">
+        <h1>إدارة خدمات: {{ barbershop.name }}</h1>
+        <a href="{% url 'barbershops:service_create' barbershop.pk %}" class="btn-add-new">
+            <i class="fas fa-plus"></i> إضافة خدمة جديدة
+        </a>
+    </div>
+
+    {% if services %}
+    <div class="table-responsive management-table">
+        <table class="table table-hover mb-0">
+            <thead class="thead-light">
+                <tr>
+                    <th>الخدمة</th>
+                    <th>السعر</th>
+                    <th>المدة</th>
+                    <th>الحالة</th>
+                    <th>إجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for service in services %}
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            {% if service.image %}
+                                <img src="{{ service.image.url }}" alt="{{ service.name }}" class="table-thumbnail">
+                            {% else %}
+                                <div class="table-placeholder"><i class="fas fa-cut"></i></div>
+                            {% endif %}
+                            <div class="ms-3">
+                                <h6 class="mb-0 fw-bold">{{ service.name }}</h6>
+                                <small class="text-muted">{{ service.description|truncatechars:40 }}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ service.price }} جنيه</td>
+                    <td>{{ service.duration }} دقيقة</td>
+                    <td>
+                        {% if service.is_active %}
+                            <span class="badge-status active">نشط</span>
+                        {% else %}
+                            <span class="badge-status inactive">غير نشط</span>
+                        {% endif %}
+                    </td>
+                    <td class="action-buttons">
+                        <a href="{% url 'barbershops:service_edit' service.pk %}" class="btn btn-sm btn-outline-secondary" title="تعديل"><i class="fas fa-edit"></i></a>
+                        <a href="{% url 'barbershops:service_delete' service.pk %}" class="btn btn-sm btn-outline-danger" title="حذف"><i class="fas fa-trash"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="no-results-alert">
+        <h4>لم تقم بإضافة أي خدمات بعد</h4>
+        <p>يمكنك إضافة خدماتك لجذب المزيد من العملاء.</p>
+        <a href="{% url 'barbershops:service_create' barbershop.pk %}" class="btn-add-new">
+            <i class="fas fa-plus"></i> أضف خدمتك الأولى الآن!
+        </a>
+    </div>
+    {% endif %}
+    <div class="mt-4">
+        <a href="{% url 'barbershops:my_list' %}" class="btn btn-secondary">العودة إلى محلاتي</a>
+    </div>
+</div>
+{% endblock %}

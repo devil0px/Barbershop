@@ -1,0 +1,472 @@
+/* ===================================
+   Barbershop Detail Page Styles
+   =================================== */
+
+.detail-hero {
+    background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+    color: white;
+    padding: 80px 0;
+}
+
+.detail-hero-image {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+    border-radius: 15px;
+    margin-bottom: 30px;
+}
+
+.detail-hero-placeholder {
+    height: 350px;
+    background: #343a40;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    font-size: 5rem;
+    margin-bottom: 30px;
+}
+
+.detail-hero .shop-name {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.detail-hero .shop-info-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px 30px;
+    margin-bottom: 20px;
+    padding: 0;
+    list-style: none;
+}
+
+.detail-hero .shop-info-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255,255,255,0.85);
+    font-size: 1rem;
+}
+
+.detail-hero .shop-info-item i {
+    color: #d4af37;
+    font-size: 1.1rem;
+}
+
+.detail-hero .shop-rating {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.detail-hero .shop-rating .stars {
+    color: #d4af37;
+    font-size: 1.3rem;
+}
+
+.detail-hero .shop-rating .review-count {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.85);
+}
+
+.detail-hero .shop-description {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 30px;
+}
+
+.detail-hero-actions {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.btn-action-primary, .btn-action-secondary {
+    border: none;
+    padding: 12px 25px;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-action-primary {
+    background-color: #d4af37;
+    color: #333;
+}
+.btn-action-primary:hover {
+    background-color: #c5a02d;
+    transform: translateY(-2px);
+}
+
+.btn-action-secondary {
+    background-color: transparent;
+    color: #d4af37;
+    border: 2px solid #d4af37;
+}
+.btn-action-secondary:hover {
+    background-color: #d4af37;
+    color: white;
+}
+
+.btn-action-edit {
+    background-color: #28a745;
+    color: white;
+}
+.btn-action-edit:hover {
+    background-color: #218838;
+}
+
+.btn-action-review-edit {
+    background-color: #17a2b8;
+    color: white;
+}
+.btn-action-review-edit:hover {
+    background-color: #138496;
+}
+
+/* --- Content Sections (Services, Reviews, etc.) --- */
+.content-section {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    margin-bottom: 30px;
+}
+
+.content-section-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #343a40;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.content-section-title i {
+    color: #d4af37;
+}
+
+/* Service Item */
+.service-item {
+    padding: 20px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+.service-item:last-child {
+    border-bottom: none;
+}
+
+.service-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.service-item-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #343a40;
+}
+
+.service-item-price {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #d4af37;
+}
+
+.service-item-description {
+    color: #6c757d;
+    margin-bottom: 15px;
+}
+
+.service-item-duration {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+/* Review Item */
+.review-item {
+    padding: 20px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+.review-item:last-child {
+    border-bottom: none;
+}
+
+.review-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.review-item-customer {
+    font-weight: 600;
+    color: #343a40;
+}
+
+.review-item-rating .stars {
+    color: #d4af37;
+}
+
+.review-item-comment {
+    color: #495057;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+.review-item-date {
+    font-size: 0.85rem;
+    color: #adb5bd;
+    text-align: left;
+}
+
+/* Sidebar Widgets */
+.sidebar-widget {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    margin-bottom: 30px;
+}
+
+.sidebar-widget-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #343a40;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sidebar-widget-title i {
+    color: #d4af37;
+}
+
+.contact-info-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.contact-info-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 15px;
+    color: #495057;
+}
+
+.contact-info-list li i {
+    color: #d4af37;
+    margin-top: 4px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    display: block;
+    color: #ced4da;
+}
+
+.empty-state .fa-exclamation-triangle {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: #ffc107;
+}
+
+/* ===================================
+   Responsive Design للخريطة والهاتف
+   =================================== */
+
+/* تحسينات للأجهزة اللوحية */
+@media (max-width: 992px) {
+    .map-section {
+        margin-top: 20px;
+        padding: 20px;
+    }
+    
+    .map-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .map-actions {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* تحسينات للهواتف الكبيرة */
+@media (max-width: 768px) {
+    #map {
+        height: 280px !important;
+        border-radius: 8px;
+    }
+    
+    .map-section {
+        padding: 15px;
+        margin-top: 15px;
+    }
+    
+    .map-header h3 {
+        font-size: 1.3rem;
+    }
+    
+    .map-actions {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .map-btn {
+        flex: 1;
+        min-width: calc(50% - 4px);
+        padding: 10px 12px;
+        font-size: 13px;
+        justify-content: center;
+    }
+    
+    /* تحسين معلومات المسافة */
+    .distance-info {
+        padding: 12px;
+        margin-bottom: 15px;
+    }
+    
+    .distance-info h6 {
+        font-size: 14px;
+    }
+    
+    .distance-info p {
+        font-size: 13px;
+        margin-bottom: 0;
+    }
+}
+
+/* تحسينات للهواتف الصغيرة */
+@media (max-width: 576px) {
+    #map {
+        height: 250px !important;
+        border-radius: 6px;
+        border-width: 1px;
+    }
+    
+    .map-section {
+        padding: 12px;
+        border-radius: 10px;
+    }
+    
+    .map-header {
+        margin-bottom: 15px;
+    }
+    
+    .map-header h3 {
+        font-size: 1.2rem;
+        margin-bottom: 0;
+    }
+    
+    .map-actions {
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+    }
+    
+    .map-btn {
+        width: 100%;
+        min-width: auto;
+        padding: 12px 16px;
+        font-size: 14px;
+        border-radius: 6px;
+    }
+    
+    /* تحسين تفاصيل الموقع */
+    .map-section .mt-3 p {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+    
+    .map-section .mt-3 strong {
+        font-size: 14px;
+    }
+    
+    /* تحسين النوافذ المنبثقة للخريطة */
+    .leaflet-popup-content {
+        font-size: 13px !important;
+        line-height: 1.4 !important;
+    }
+    
+    .leaflet-popup-content h6 {
+        font-size: 14px !important;
+        margin-bottom: 8px !important;
+    }
+    
+    .leaflet-popup-content .btn {
+        font-size: 12px !important;
+        padding: 6px 12px !important;
+    }
+}
+
+/* تحسينات للشاشات الصغيرة جداً */
+@media (max-width: 400px) {
+    #map {
+        height: 220px !important;
+    }
+    
+    .map-section {
+        padding: 10px;
+    }
+    
+    .map-btn {
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+    
+    .map-header h3 {
+        font-size: 1.1rem;
+    }
+}
+
+/* تحسين أزرار الخريطة للمس */
+@media (hover: none) and (pointer: coarse) {
+    .map-btn {
+        min-height: 44px; /* حد أدنى للمس السهل */
+        touch-action: manipulation;
+    }
+    
+    .map-btn:active {
+        transform: scale(0.98);
+        transition: transform 0.1s ease;
+    }
+}
+
+/* تحسين التباين للشاشات عالية الكثافة */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .map-section {
+        border: 1px solid #dee2e6;
+    }
+    
+    #map {
+        border-width: 1px;
+    }
+}

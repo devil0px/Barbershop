@@ -1,0 +1,82 @@
+/* --- Confirmation Page Styles --- */
+
+.confirmation-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    padding: 40px 0;
+}
+
+.confirmation-box {
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+}
+
+.confirmation-icon {
+    font-size: 4rem;
+    color: #dc3545; /* Red for danger */
+    margin-bottom: 20px;
+}
+
+.confirmation-box h1 {
+    font-size: 1.8rem;
+    color: #343a40;
+    margin-bottom: 15px;
+}
+
+.confirmation-box p {
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin-bottom: 30px;
+}
+
+.confirmation-box p strong {
+    color: #343a40;
+    font-weight: 600;
+}
+
+.confirmation-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.btn-confirm-delete {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-confirm-delete:hover {
+    background-color: #c82333;
+    transform: translateY(-2px);
+}
+
+.btn-cancel-action {
+    background-color: #e9ecef;
+    color: #343a40;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.btn-cancel-action:hover {
+    background-color: #dee2e6;
+    transform: translateY(-2px);
+}

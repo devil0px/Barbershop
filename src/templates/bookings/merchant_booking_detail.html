@@ -1,0 +1,246 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}تفاصيل الحجز - Barber Shop{% endblock %}
+
+{% block extra_css %}
+<style>
+    .booking-detail-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+    
+    .status-badge {
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    
+    .status-pending { background: #fff3cd; color: #856404; }
+    .status-confirmed { background: #d1edff; color: #0c5460; }
+    .status-completed { background: #d4edda; color: #155724; }
+    .status-cancelled { background: #f8d7da; color: #721c24; }
+    .status-no_show { background: #e2e3e5; color: #495057; }
+    
+    .action-btn {
+        margin: 5px;
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-confirm { background: #17a2b8; color: white; }
+    .btn-complete { background: #28a745; color: white; }
+    .btn-cancel { background: #dc3545; color: white; }
+    
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+    
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 15px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #dee2e6;
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 10px;
+    }
+    
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -22px;
+        top: 20px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #007bff;
+        border: 3px solid white;
+        box-shadow: 0 0 0 3px #dee2e6;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="background: linear-gradient(135deg, #1a1a1a, #2a2a2a); color: white; padding: 80px 0 40px; text-align: center;">
+    <div class="container">
+        <h1>تفاصيل الحجز</h1>
+        <p>إدارة وتتبع تفاصيل الحجز</p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row">
+        <!-- تفاصيل الحجز -->
+        <div class="col-lg-8">
+            <div class="booking-detail-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3>معلومات الحجز</h3>
+                    <span class="status-badge status-{{ booking.status }}">
+                        {{ booking.get_status_display }}
+                    </span>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>معلومات العميل</h5>
+                        <p><strong>الاسم:</strong> 
+                            {% if booking.customer %}
+                                {{ booking.customer.get_full_name|default:booking.customer.username }}
+                            {% else %}
+                                {{ booking.customer_name }}
+                            {% endif %}
+                        </p>
+                        <p><strong>رقم الهاتف:</strong> 
+                            {% if booking.customer %}
+                                {{ booking.customer.phone_number|default:"غير محدد" }}
+                            {% else %}
+                                {{ booking.customer_phone }}
+                            {% endif %}
+                        </p>
+                        {% if booking.customer_email %}
+                            <p><strong>البريد الإلكتروني:</strong> {{ booking.customer_email }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h5>تفاصيل الحجز</h5>
+                        <p><strong>المحل:</strong> {{ booking.barbershop.name }}</p>
+                        <p><strong>الخدمة:</strong> {{ booking.service.name }}</p>
+                        <p><strong>اليوم المحجوز له:</strong> {{ booking.booking_day|date:"l, d F Y" }}</p>
+                        <p><strong>عميل رقم:</strong> {{ booking.queue_number }}</p>
+                        <p><strong>المدة المتوقعة:</strong> {{ booking.service.duration }} دقيقة</p>
+                        <p><strong>السعر:</strong> {{ booking.total_price }} جنيه</p>
+                    </div>
+                </div>
+                
+                {% if booking.notes %}
+                    <div class="mt-4">
+                        <h5>ملاحظات العميل</h5>
+                        <div class="alert alert-info">
+                            {{ booking.notes }}
+                        </div>
+                    </div>
+                {% endif %}
+                
+                <div class="mt-4">
+                    <p><strong>تاريخ الإنشاء:</strong> {{ booking.created_at|date:"d/m/Y H:i" }}</p>
+                    <p><strong>آخر تحديث:</strong> {{ booking.updated_at|date:"d/m/Y H:i" }}</p>
+                </div>
+            </div>
+            
+            <!-- تاريخ الحجز -->
+            {% if booking_history %}
+                <div class="booking-detail-card">
+                    <h4 class="mb-4">تاريخ الحجز</h4>
+                    <div class="timeline">
+                        {% for history in booking_history %}
+                            <div class="timeline-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>{{ history.get_status_display }}</strong>
+                                        <p class="mb-1 text-muted">بواسطة: {{ history.changed_by.get_full_name|default:history.changed_by.username }}</p>
+                                        {% if history.notes %}
+                                            <p class="mb-0">{{ history.notes }}</p>
+                                        {% endif %}
+                                    </div>
+                                    <small class="text-muted">{{ history.created_at|date:"d/m/Y H:i" }}</small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- إجراءات الحجز -->
+        <div class="col-lg-4">
+            <div class="booking-detail-card">
+                <h4 class="mb-4">إجراءات الحجز</h4>
+
+
+
+                <p class="mb-2"><strong>تحديث حالة الحجز:</strong></p>
+                <form action="{% url 'bookings:update_status' booking.pk %}" method="post">
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+                        <select name="status" class="form-select">
+                            <option value="pending" {% if booking.status == 'pending' %}selected{% endif %}>في الانتظار</option>
+                            <option value="confirmed" {% if booking.status == 'confirmed' %}selected{% endif %}>مؤكد</option>
+                            <option value="completed" {% if booking.status == 'completed' %}selected{% endif %}>مكتمل</option>
+                            <option value="cancelled" {% if booking.status == 'cancelled' %}selected{% endif %}>ملغي</option>
+                            <option value="no_show" {% if booking.status == 'no_show' %}selected{% endif %}>لم يحضر</option>
+                        </select>
+                        <button type="submit" class="btn btn-info">تحديث</button>
+                    </div>
+                </form>
+                
+                <h5>معلومات إضافية</h5>
+                <div class="small">
+                    <p><strong>رقم الحجز:</strong> #{{ booking.pk }}</p>
+                    <p><strong>حالة الدفع:</strong> نقدي</p>
+                    {% if booking.is_past_due %}
+                        <div class="alert alert-warning small">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            هذا الحجز قد انتهى وقته
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- روابط سريعة -->
+            <div class="booking-detail-card">
+                <h5>روابط سريعة</h5>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'bookings:merchant_list' booking.barbershop.id %}" class="btn btn-outline-primary">
+                        <i class="fas fa-list"></i> جميع الحجوزات
+                    </a>
+                    <a href="{% url 'bookings:today' %}" class="btn btn-outline-info">
+                        <i class="fas fa-calendar-day"></i> حجوزات اليوم
+                    </a>
+                    <a href="{% url 'bookings:search' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-search"></i> البحث في الحجوزات
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // تأكيد إجراءات الحجز
+    $('.btn-cancel').click(function(e) {
+        if (!confirm('هل أنت متأكد من إلغاء هذا الحجز؟')) {
+            e.preventDefault();
+        }
+    });
+    
+    $('.btn-complete').click(function(e) {
+        if (!confirm('هل تم إكمال هذا الحجز بالفعل؟')) {
+            e.preventDefault();
+        }
+    });
+});
+</script>
+{% endblock %}

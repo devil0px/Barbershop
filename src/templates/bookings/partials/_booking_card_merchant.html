@@ -1,0 +1,92 @@
+<div class="col-12">
+    <div class="card booking-card mb-3">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-0">{{ booking.service.name }}</h5>
+                    <small class="text-muted">
+                        {% if booking.booking_day %}
+                            {{ booking.booking_day|date:"D, d M Y" }}
+                        {% else %}
+                            غير محدد
+                        {% endif %}
+                    </small>
+                </div>
+                <span class="badge {{ booking.get_status_class }}">
+                    {{ booking.get_status_display_arabic }}
+                </span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="mb-2">
+                <strong>العميل (رقم {{ booking.queue_number }}):</strong>
+                {% if booking.customer %}
+                    {{ booking.customer.get_full_name }}
+                {% else %}
+                    {% if booking.customer_name %}
+                        {{ booking.customer_name }}
+                    {% else %}
+                        <span class="text-danger">عميل محذوف</span>
+                    {% endif %}
+                {% endif %}
+            </div>
+            <div class="mb-2">
+                <strong>الهاتف:</strong> 
+                {% if booking.customer and booking.customer.phone_number %}
+                    {{ booking.customer.phone_number }}
+                {% elif booking.customer_phone %}
+                    {{ booking.customer_phone }}
+                {% else %}
+                    غير متوفر
+                {% endif %}
+            </div>
+            <div class="mb-2">
+                <strong>تاريخ الإنشاء:</strong> {{ booking.created_at|date:"d/m/Y H:i" }}
+            </div>
+            <div>
+                <strong>السعر:</strong> {{ booking.total_price }} جنيه
+            </div>
+            {% if booking.notes %}
+            <div class="mt-2">
+                <strong>ملاحظات:</strong> {{ booking.notes }}
+            </div>
+            {% endif %}
+        </div>
+        <div class="card-footer">
+            <div class="d-grid gap-2">
+                {% comment %} الحالة: في الانتظار - عرض تأكيد ورفض {% endcomment %}
+                {% if booking.status == 'pending' %}
+                    <div class="d-flex gap-2">
+                        <form action="{% url 'bookings:confirm' booking.pk %}" method="post" class="flex-grow-1">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-sm w-100"><i class="fas fa-check me-1"></i> تأكيد</button>
+                        </form>
+                        <form action="{% url 'bookings:reject' booking.pk %}" method="post" class="flex-grow-1">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm w-100"><i class="fas fa-times me-1"></i> رفض</button>
+                        </form>
+                    </div>
+                {% comment %} الحالة: مؤكد (فقط لحجوزات اليوم) - عرض مكتمل ولم يحضر {% endcomment %}
+                {% elif booking.status == 'confirmed' and booking.booking_day == today %}
+                    <div class="d-flex gap-2">
+                        <form action="{% url 'bookings:completed' booking.pk %}" method="post" class="flex-grow-1">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-sm w-100"><i class="fas fa-check-double me-1"></i> مكتمل</button>
+                        </form>
+                        <form action="{% url 'bookings:no_show' booking.pk %}" method="post" class="flex-grow-1">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-secondary btn-sm w-100"><i class="fas fa-user-slash me-1"></i> لم يحضر</button>
+                        </form>
+                    </div>
+                {% endif %}
+
+                <a href="{% url 'bookings:booking_chat' booking.pk %}" class="btn btn-info btn-sm mt-2 w-100">
+                    <i class="fas fa-comments me-1"></i> الدردشة مع العميل
+                    {% if booking.unread_messages %}
+                        <span class="badge bg-danger ms-1">جديد</span>
+                    {% endif %}
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,22 @@
+<div class="list-group">
+    <a href="{% url 'barbershops:my_list' %}" class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'my_list' %}active{% endif %}">
+        <i class="fas fa-store-alt fa-fw me-2"></i> محلاتي
+    </a>
+    {% if user.barbershops.first %}
+    <a href="{% url 'barbershops:service_list' barbershop_pk=user.barbershops.first.pk %}" class="list-group-item list-group-item-action {% if 'service_' in request.resolver_match.url_name %}active{% endif %}">
+        <i class="fas fa-cut fa-fw me-2"></i> إدارة الخدمات
+    </a>
+    {% endif %}
+    <a href="{% url 'accounts:dashboard' %}" class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'merchant_list' and request.resolver_match.app_name == 'bookings' %}active{% endif %}">
+        <i class="fas fa-calendar-check me-2"></i> إدارة الحجوزات
+    </a>
+    <a href="{% url 'reviews:merchant_list' %}" class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'merchant_list' and request.resolver_match.app_name == 'reviews' %}active{% endif %}">
+        <i class="fas fa-star me-2"></i> إدارة التقييمات
+    </a>
+    <a href="{% url 'accounts:profile' %}" class="list-group-item list-group-item-action {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+        <i class="fas fa-user-cog me-2"></i> الملف الشخصي
+    </a>
+    <a href="{% url 'accounts:logout' %}" class="list-group-item list-group-item-action text-danger">
+        <i class="fas fa-sign-out-alt me-2"></i> تسجيل الخروج
+    </a>
+</div>

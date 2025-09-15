@@ -1,0 +1,96 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}ملفي الشخصي - Barber Shop{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-header {
+        background: linear-gradient(135deg, #333, #1a1a1a);
+        color: white;
+        padding: 60px 0;
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .profile-card {
+        background-color: #fff;
+        border-radius: 15px;
+        padding: 40px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.09);
+        margin-top: -80px; /* Pulls the card up into the header */
+        position: relative;
+        z-index: 10;
+    }
+
+    .profile-card h3 {
+        color: #d4af37;
+        font-weight: bold;
+        margin-bottom: 30px;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 15px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-row strong {
+        color: #333;
+    }
+
+    .info-row span {
+        color: #555;
+    }
+
+    .actions-group {
+        margin-top: 30px;
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-header">
+    <div class="container">
+        <h1><i class="fas fa-user-circle"></i> ملفي الشخصي</h1>
+        <p>مرحبًا بك، {{ user.username }}!</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="profile-card">
+                <h3>تفاصيل الحساب</h3>
+                <div class="info-row">
+                    <strong><i class="fas fa-user-tag text-muted me-2"></i> اسم المستخدم:</strong>
+                    <span>{{ user.username }}</span>
+                </div>
+                <div class="info-row">
+                    <strong><i class="fas fa-envelope text-muted me-2"></i> البريد الإلكتروني:</strong>
+                    <span>{{ user.email }}</span>
+                </div>
+                <div class="info-row">
+                    <strong><i class="fas fa-user-tie text-muted me-2"></i> نوع الحساب:</strong>
+                    <span>{{ user.get_user_type_display }}</span>
+                </div>
+
+                <div class="actions-group text-center">
+                    <a href="{% url 'accounts:edit_profile' %}" class="btn btn-primary mx-2" style="background-color: #d4af37; border-color: #d4af37;"><i class="fas fa-edit"></i> تعديل الملف الشخصي</a>
+                    <a href="{% url 'accounts:password_change' %}" class="btn btn-secondary mx-2"><i class="fas fa-key"></i> تغيير كلمة المرور</a>
+                    <form action="{% url 'accounts:logout' %}" method="post" class="d-inline mx-2">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

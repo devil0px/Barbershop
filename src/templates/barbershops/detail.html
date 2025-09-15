@@ -1,0 +1,518 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}{{ barbershop.name }} - Barber Shop{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/barbershop_detail.css' %}">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css';"/>
+<style>
+.map-section {
+    margin-top: 30px;
+    padding: 25px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.map-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.map-actions {
+    display: flex;
+    gap: 10px;
+}
+.map-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.map-btn-primary {
+    background: #007bff;
+    color: white;
+}
+.map-btn-success {
+    background: #28a745;
+    color: white;
+}
+.map-btn-info {
+    background: #17a2b8;
+    color: white;
+}
+.map-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+.distance-info {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    border-left: 4px solid #007bff;
+}
+.distance-info h6 {
+    margin: 0 0 8px 0;
+    color: #007bff;
+}
+.distance-info p {
+    margin: 0;
+    color: #6c757d;
+}
+
+/* تحسينات إضافية للخريطة على الهاتف */
+.leaflet-container {
+    font-family: 'Cairo', sans-serif !important;
+}
+
+.leaflet-popup-content-wrapper {
+    border-radius: 8px !important;
+}
+
+.mobile-popup-content {
+    text-align: center;
+    padding: 8px;
+}
+
+.desktop-popup-content {
+    padding: 10px;
+}
+
+/* تحسين أزرار التحكم في الخريطة */
+.leaflet-control-zoom {
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+}
+
+.leaflet-control-zoom a {
+    background: #fff !important;
+    border: 1px solid #ddd !important;
+    color: #333 !important;
+    font-size: 16px !important;
+    line-height: 26px !important;
+    width: 30px !important;
+    height: 30px !important;
+}
+
+.leaflet-control-zoom a:hover {
+    background: #f8f9fa !important;
+    border-color: #007bff !important;
+    color: #007bff !important;
+}
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% endblock %}
+
+{% block content %}
+<div class="detail-hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-4">
+                {% if barbershop.image %}
+                    <img src="{{ barbershop.image.url }}" alt="{{ barbershop.name }}" class="detail-hero-image">
+                {% else %}
+                    <div class="detail-hero-placeholder">
+                        <i class="fas fa-store"></i>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-lg-8">
+                <h1 class="shop-name">{{ barbershop.name }}</h1>
+                
+                <ul class="shop-info-list">
+                    <li class="shop-info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ barbershop.address }}</span>
+                    </li>
+                    <li class="shop-info-item">
+                        <i class="fas fa-phone"></i>
+                        <span>{{ barbershop.phone_number }}</span>
+                    </li>
+                    <li class="shop-info-item">
+                        <i class="fas fa-clock"></i>
+                        <span>{{ barbershop.opening_time }} - {{ barbershop.closing_time }}</span>
+                    </li>
+                </ul>
+                
+                <div class="shop-rating">
+                    <div class="stars">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= barbershop.average_rating|default:0 %}
+                                <i class="fas fa-star"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <span class="review-count">({{ barbershop.total_reviews|default:0 }} تقييم)</span>
+                </div>
+                
+                <p class="shop-description">{{ barbershop.description }}</p>
+                
+                <div class="detail-hero-actions">
+                    {% if user == barbershop.owner %}
+                        <a href="{% url 'barbershops:edit' barbershop.pk %}" class="btn-action-primary btn-action-edit">
+                            <i class="fas fa-edit"></i>
+                            تعديل المحل
+                        </a>
+                    {% else %}
+                        <a href="{% url 'bookings:create_booking' barbershop_id=barbershop.pk %}" class="btn-action-primary">
+                            <i class="fas fa-calendar-plus"></i>
+                            احجز موعدك الآن
+                        </a>
+                        {% if user.is_authenticated and user != barbershop.owner %}
+                            {% if user_review %}
+                                <a href="{% url 'reviews:edit' user_review.pk %}" class="btn-action-secondary btn-action-review-edit">
+                                    <i class="fas fa-edit"></i>
+                                    تعديل تقييمك
+                                </a>
+                            {% else %}
+                                <a href="{% url 'reviews:create' barbershop.pk %}" class="btn-action-secondary">
+                                    <i class="fas fa-star"></i>
+                                    أضف تقييمك
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Services Section -->
+            <section class="content-section">
+                <h3 class="content-section-title">
+                    <i class="fas fa-cut"></i>
+                    الخدمات المتاحة
+                </h3>
+                
+                {% if services %}
+                    {% for service in services %}
+                        <div class="service-item">
+                            <div class="service-item-header">
+                                <div class="service-item-name">{{ service.name }}</div>
+                                <div class="service-item-price">{{ service.price }} EGP</div>
+                            </div>
+                            <p class="service-item-description">{{ service.description }}</p>
+                            <div class="service-item-duration">
+                                <i class="fas fa-clock"></i>
+                                <span>{{ service.duration }} دقيقة</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-cut"></i>
+                        <p>لا توجد خدمات متاحة حالياً</p>
+                    </div>
+                {% endif %}
+            </section>
+            
+            <!-- Reviews Section -->
+            <section class="content-section">
+                <h3 class="content-section-title">
+                    <i class="fas fa-star"></i>
+                    آراء العملاء
+                </h3>
+                
+                {% if reviews %}
+                    {% for review in reviews %}
+                        <div class="review-item">
+                            <div class="review-item-header">
+                                <div class="review-item-customer">{{ review.customer.username }}</div>
+                                <div class="review-item-rating stars">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= review.rating %}
+                                            <i class="fas fa-star"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <p class="review-item-comment">{{ review.comment }}</p>
+                            <div class="review-item-date">{{ review.created_at|date:"d F Y" }}</div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-star-half-alt"></i>
+                        <p>لا توجد تقييمات حتى الآن</p>
+                    </div>
+                {% endif %}
+            </section>
+            
+            <!-- Map and Location Section -->
+            {% if barbershop.latitude and barbershop.longitude %}
+            <section class="map-section">
+                <div class="map-header">
+                    <h3 class="content-section-title">
+                        <i class="fas fa-map-marker-alt"></i>
+                        موقع المحل
+                    </h3>
+                    <div class="map-actions">
+                        <button class="map-btn map-btn-info" onclick="getDirections()">
+                            <i class="fas fa-route"></i>
+                            الاتجاهات
+                        </button>
+                        <button class="map-btn map-btn-success" onclick="calculateDistance()">
+                            <i class="fas fa-ruler-horizontal"></i>
+                            المسافة
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Distance Information -->
+                <div id="distance-info" class="distance-info" style="display: none;">
+                    <h6><i class="fas fa-info-circle"></i> معلومات المسافة</h6>
+                    <p id="distance-text">جاري حساب المسافة...</p>
+                </div>
+                
+                <!-- Map Container -->
+                <div id="map" style="height: 350px; border-radius: 10px; border: 2px solid #e9ecef;"></div>
+                
+                <!-- Location Details -->
+                <div class="mt-3">
+                    <p class="mb-2"><strong><i class="fas fa-map-pin"></i> العنوان:</strong> {{ barbershop.address }}</p>
+                    <p class="mb-2"><strong><i class="fas fa-phone"></i> الهاتف:</strong> {{ barbershop.phone_number }}</p>
+                    <div class="map-actions mt-3">
+                                                <button class="map-btn map-btn-primary" onclick="getDirections()">
+                            <i class="fas fa-directions"></i>
+                            الاتجاهات
+                        </button>
+                        <button class="map-btn map-btn-success" onclick="shareLocation()">
+                            <i class="fas fa-share-alt"></i>
+                            مشاركة الموقع
+                        </button>
+                    </div>
+                </div>
+            </section>
+            {% endif %}
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Current Turn Widget -->
+            <aside class="sidebar-widget text-center">
+                <h3 class="sidebar-widget-title">
+                    <i class="fas fa-user-clock"></i>
+                    الدور الحالي
+                </h3>
+                <p class="display-4 fw-bold" style="color: #d4af37; margin-bottom: 0.5rem;">
+                    {% if current_turn_number %}
+                        {{ current_turn_number }}
+                    {% else %}
+                        --
+                    {% endif %}
+                </p>
+                <p class="text-muted small">هذا هو رقم الدور الذي يتم خدمته حالياً.</p>
+            </aside>
+
+            <!-- Contact Info Widget -->
+            <aside class="sidebar-widget">
+                <h3 class="sidebar-widget-title">
+                    <i class="fas fa-info-circle"></i>
+                    معلومات الاتصال
+                </h3>
+                <ul class="contact-info-list">
+                    <li>
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ barbershop.address }}</span>
+                    </li>
+                    <li>
+                        <i class="fas fa-phone"></i>
+                        <span>{{ barbershop.phone_number }}</span>
+                    </li>
+                    {% if barbershop.email %}
+                        <li>
+                            <i class="fas fa-envelope"></i>
+                            <span>{{ barbershop.email }}</span>
+                        </li>
+                    {% endif %}
+                    <li>
+                        <i class="fas fa-clock"></i>
+                        <span>{{ barbershop.opening_time }} - {{ barbershop.closing_time }}</span>
+                    </li>
+                </ul>
+            </aside>
+            
+            <!-- Quick Booking Widget -->
+            <aside class="sidebar-widget">
+                <h3 class="sidebar-widget-title">
+                    <i class="fas fa-calendar-check"></i>
+                    حجز سريع
+                </h3>
+                <div class="text-center">
+                    <p>احجز موعدك الآن واستمتع بأفضل خدمات الحلاقة.</p>
+                    <a href="{% url 'bookings:create_booking' barbershop_id=barbershop.pk %}" class="btn btn-action-primary w-100 mt-2">
+                        <i class="fas fa-calendar-plus"></i>
+                        احجز الآن
+                    </a>
+                </div>
+            </aside>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="{% static 'js/modules/notifications.js' %}"></script>
+
+
+{% if barbershop_data %}
+    {{ barbershop_data|json_script:"barbershop-data" }}
+
+    <script>
+        // Step 1: Immediately parse and assign data to a global variable.
+        // This ensures window.barbershopData is available for map-init.js functions.
+        try {
+            window.barbershopData = JSON.parse(document.getElementById('barbershop-data').textContent);
+        } catch (e) {
+            console.error('Could not parse barbershop data.');
+            window.barbershopData = null;
+        }
+
+        // Step 2: Define helper functions that will be used by the buttons.
+        function getDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radius of the Earth in km
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const distance = R * c;
+            return distance.toFixed(2);
+        }
+
+        function calculateDistance() {
+            if (!window.barbershopData) { alert('بيانات المحل غير متوفرة.'); return; }
+            const distanceInfo = document.getElementById('distance-info');
+            const distanceText = document.getElementById('distance-text');
+            if (!distanceInfo || !distanceText) return;
+            distanceInfo.style.display = 'block';
+            distanceText.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تحديد موقعك...';
+            if (!navigator.geolocation) {
+                distanceText.textContent = 'المتصفح لا يدعم تحديد الموقع.';
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const userLat = position.coords.latitude;
+                    const userLng = position.coords.longitude;
+                    const shopLat = window.barbershopData.lat;
+                    const shopLng = window.barbershopData.lng;
+                    const distance = getDistance(userLat, userLng, shopLat, shopLng);
+                    distanceText.innerHTML = `يبعد المحل عنك مسافة <b>${distance} كيلومتر</b> تقريبًا.`;
+                },
+                () => { distanceText.textContent = 'لا يمكن الوصول إلى موقعك. يرجى تفعيل خدمة تحديد المواقع.'; }
+            );
+        }
+
+        function getDirections() {
+            if (!window.barbershopData) {
+                alert('بيانات المحل غير متوفرة.');
+                return;
+            }
+
+            const shopLat = window.barbershopData.lat;
+            const shopLng = window.barbershopData.lng;
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const userLat = position.coords.latitude;
+                        const userLng = position.coords.longitude;
+                        const url = `https://www.google.com/maps/dir/${userLat},${userLng}/${shopLat},${shopLng}`;
+                        window.open(url, '_blank');
+                    },
+                    () => {
+                        alert('لم نتمكن من تحديد موقعك. سيتم فتح الخريطة مع تحديد موقع المحل فقط.');
+                        const fallbackUrl = `https://www.google.com/maps/dir/?api=1&destination=${shopLat},${shopLng}`;
+                        window.open(fallbackUrl, '_blank');
+                    }
+                );
+            } else {
+                alert('متصفحك لا يدعم تحديد المواقع. سيتم فتح الخريطة مع تحديد موقع المحل فقط.');
+                const fallbackUrl = `https://www.google.com/maps/dir/?api=1&destination=${shopLat},${shopLng}`;
+                window.open(fallbackUrl, '_blank');
+            }
+        }
+
+        function shareLocation() {
+            if (!window.barbershopData) { alert('بيانات المحل غير متوفرة.'); return; }
+            const { name, lat, lng } = window.barbershopData;
+            const shareData = { title: `موقع ${name}`, text: `أنصحك بزيارة ${name}.`, url: window.location.href };
+            if (navigator.share) {
+                navigator.share(shareData).catch(err => console.error('Error sharing:', err));
+            } else {
+                const locationUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+                navigator.clipboard.writeText(locationUrl).then(() => { alert('تم نسخ رابط الموقع إلى الحافظة!'); });
+            }
+        }
+
+        // Step 3: Initialize the map once the DOM is fully loaded.
+        document.addEventListener('DOMContentLoaded', function() {
+            const mapContainer = document.getElementById('map');
+            
+            // Use the globally defined data
+            const barbershopData = window.barbershopData;
+
+            if (mapContainer && barbershopData && barbershopData.lat && barbershopData.lng && typeof L !== 'undefined') {
+                if (mapContainer._leaflet_id) {
+                    console.warn('Map is already initialized.');
+                    return;
+                }
+
+                try {
+                    const map = L.map('map').setView([barbershopData.lat, barbershopData.lng], 15);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap contributors',
+                        maxZoom: 18
+                    }).addTo(map);
+
+                    const marker = L.marker([barbershopData.lat, barbershopData.lng]).addTo(map);
+                    marker.bindPopup(`<b>${barbershopData.name}</b>`).openPopup();
+
+                    window.barbershopMap = map; // Make map object global for helper functions
+                    console.log('Map initialized successfully.');
+
+                } catch (error) {
+                    console.error('Error initializing map:', error);
+                    mapContainer.innerHTML = '<div class="alert alert-danger">حدث خطأ أثناء تحميل الخريطة.</div>';
+                }
+            } else {
+                console.error('Map initialization failed: Dependencies missing.');
+            }
+        });
+    </script>
+{% else %}
+    <script>
+        // If no location data, display a message.
+        document.addEventListener('DOMContentLoaded', function() {
+            const mapContainer = document.getElementById('map');
+            if (mapContainer) {
+                mapContainer.innerHTML = 
+                    '<div style="text-align: center; padding: 50px; color: #666; border: 2px dashed #ddd; border-radius: 8px; background: #f8f9fa;">' +
+                    '<i class="fas fa-map-marker-alt" style="font-size: 2rem; color: #dc3545; margin-bottom: 10px;"></i><br>' +
+                    '<strong style="color: #495057;">موقع المحل غير متوفر</strong><br>' +
+                    '<small style="color: #6c757d;">لم يتم تحديد موقع هذا المحل بعد</small>' +
+                    '</div>';
+            }
+        });
+    </script>
+{% endif %}
+{% endblock %}

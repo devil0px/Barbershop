@@ -1,0 +1,28 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}تعديل الملف الشخصي - Barber Shop{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header text-white" style="background-color: #343a40;">
+                    <h3 class="mb-0"><i class="fas fa-edit"></i> تعديل الملف الشخصي</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        {% include 'base/form_snippet.html' with form=form %}
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-start mt-4">
+                            <button type="submit" class="btn btn-primary" style="background-color: #d4af37; border-color: #d4af37;"><i class="fas fa-save"></i> حفظ التغييرات</button>
+                            <a href="{% url 'accounts:profile' %}" class="btn btn-secondary"><i class="fas fa-times"></i> إلغاء</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

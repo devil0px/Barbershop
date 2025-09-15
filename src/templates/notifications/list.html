@@ -1,0 +1,152 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}الإشعارات{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-bell"></i> الإشعارات</h2>
+                {% if unread_count > 0 %}
+                <form method="post" action="{% url 'notifications:mark_all_read' %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-primary">
+                        <i class="fas fa-check-double"></i> تحديد الكل كمقروء
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+
+            {% if unread_count > 0 %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                لديك {{ unread_count }} إشعار غير مقروء
+            </div>
+            {% endif %}
+
+            {% if notifications %}
+            <div class="list-group">
+                {% for notification in notifications %}
+                <div class="list-group-item {% if not notification.is_read %}list-group-item-light border-primary{% endif %}">
+                    <div class="d-flex w-100 justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="{{ notification.get_icon }} {{ notification.get_color_class }} me-2"></i>
+                                <h6 class="mb-0 {% if not notification.is_read %}fw-bold{% endif %}">
+                                    {{ notification.title }}
+                                </h6>
+                                {% if not notification.is_read %}
+                                <span class="badge bg-primary ms-2">جديد</span>
+                                {% endif %}
+                            </div>
+                            <p class="mb-2 {% if not notification.is_read %}fw-bold{% endif %}">
+                                {{ notification.message }}
+                            </p>
+                            <small class="text-muted">
+                                <i class="fas fa-clock"></i>
+                                {{ notification.created_at|date:"d/m/Y H:i" }}
+                                {% if notification.sender %}
+                                | من: {{ notification.sender.get_full_name|default:notification.sender.username }}
+                                {% endif %}
+                            </small>
+                        </div>
+                        <div class="ms-3">
+                            {% if not notification.is_read %}
+                            <form method="post" action="{% url 'notifications:mark_read' notification.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-success" title="تحديد كمقروء">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                            {% if notification.booking %}
+                            <a href="{% url 'bookings:booking_chat' notification.booking.id %}" 
+                               class="btn btn-sm btn-outline-primary ms-1" title="عرض المحادثة">
+                                <i class="fas fa-comment"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <nav aria-label="تنقل الصفحات" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">الأولى</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">السابقة</a>
+                    </li>
+                    {% endif %}
+
+                    <li class="page-item active">
+                        <span class="page-link">
+                            صفحة {{ page_obj.number }} من {{ page_obj.paginator.num_pages }}
+                        </span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">التالية</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">الأخيرة</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-bell-slash fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">لا توجد إشعارات</h4>
+                <p class="text-muted">ستظهر إشعاراتك هنا عند وصولها</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+// تحديث الإشعارات تلقائياً كل 30 ثانية
+setInterval(function() {
+    fetch('{% url "notifications:unread_count" %}')
+        .then(response => response.json())
+        .then(data => {
+            // تحديث عداد الإشعارات في الـ navbar إذا كان موجود
+            const notificationBadge = document.querySelector('.notification-badge');
+            if (notificationBadge) {
+                if (data.unread_count > 0) {
+                    notificationBadge.textContent = data.unread_count;
+                    notificationBadge.style.display = 'inline';
+                } else {
+                    notificationBadge.style.display = 'none';
+                }
+            }
+        })
+        .catch(error => console.log('Error fetching notifications:', error));
+}, 30000);
+
+// تحديد الإشعار كمقروء عند النقر عليه
+document.querySelectorAll('.list-group-item').forEach(item => {
+    item.addEventListener('click', function(e) {
+        if (e.target.closest('form') || e.target.closest('a')) {
+            return; // لا تفعل شيء إذا تم النقر على زر أو رابط
+        }
+        
+        const markReadForm = this.querySelector('form[action*="mark-read"]');
+        if (markReadForm) {
+            markReadForm.submit();
+        }
+    });
+});
+</script>
+{% endblock %}

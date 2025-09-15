@@ -1,0 +1,34 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}الصالونات القريبة{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">الصالونات القريبة منك</h1>
+
+    {% if barbershops_with_distance %}
+        <div class="row">
+            {% for item in barbershops_with_distance %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        <img src="{{ item.barbershop.image.url }}" class="card-img-top" alt="{{ item.barbershop.name }}" style="height: 200px; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ item.barbershop.name }}</h5>
+                            <p class="card-text text-muted">{{ item.barbershop.address }}</p>
+                            <p class="card-text"><strong>المسافة:</strong> {{ item.distance|floatformat:"2" }} كم</p>
+                        </div>
+                        <div class="card-footer">
+                            <a href="{% url 'barbershops:detail' item.barbershop.pk %}" class="btn btn-primary">عرض التفاصيل</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center" role="alert">
+            لم يتم العثور على صالونات قريبة. قد تحتاج إلى توسيع نطاق البحث أو التأكد من تفعيل خدمات الموقع.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

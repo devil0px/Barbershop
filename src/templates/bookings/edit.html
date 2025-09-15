@@ -1,0 +1,227 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}تعديل الحجز{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/bookings.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="booking-hero">
+    <div class="container">
+        <h1>تعديل الحجز</h1>
+        <p>عدل تفاصيل حجزك في {{ object.barbershop.name }}</p>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="booking-form-container">
+                
+                <!-- معلومات الحجز الحالية -->
+                <div class="alert alert-info mb-4">
+                    <h6 class="alert-heading">
+                        <i class="fas fa-info-circle"></i>
+                        معلومات الحجز الحالية
+                    </h6>
+                    <p class="mb-0">
+                        <strong>المحل:</strong> {{ object.barbershop.name }} |
+                        <strong>الخدمة:</strong> {{ object.service.name }} |
+                        <strong>التاريخ:</strong> {{ object.booking_date|date:"Y/m/d" }} |
+                        <strong>الوقت:</strong> {{ object.booking_time|time:"H:i" }}
+                    </p>
+                </div>
+
+                <form method="post" id="booking-form">
+                    {% csrf_token %}
+                    
+                    <!-- معلومات العميل -->
+                    {% if not user.is_authenticated %}
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">{{ form.customer_name.label }}</label>
+                                {{ form.customer_name }}
+                                {% if form.customer_name.errors %}<div class="invalid-feedback d-block">{{ form.customer_name.errors.as_text }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ form.customer_phone.label }}</label>
+                                {{ form.customer_phone }}
+                                {% if form.customer_phone.errors %}<div class="invalid-feedback d-block">{{ form.customer_phone.errors.as_text }}</div>{% endif %}
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">{{ form.customer_email.label }}</label>
+                            {{ form.customer_email }}
+                            {% if form.customer_email.errors %}<div class="invalid-feedback d-block">{{ form.customer_email.errors.as_text }}</div>{% endif %}
+                        </div>
+                    {% endif %}
+
+                    <!-- اختيار الخدمة -->
+                    <div class="col-12 mb-4">
+                        <h5 class="mb-3">
+                            <i class="fas fa-cut" style="color: #d4af37; margin-right: 8px;"></i>
+                            تغيير الخدمة (إذا رغبت)
+                        </h5>
+                        
+                        <div class="row g-3" id="service-selection">
+                            {% for service in services %}
+                                <div class="col-md-6">
+                                    <div class="card selection-card" data-value="{{ service.pk }}">
+                                        <div class="card-body">
+                                            <div class="row align-items-center">
+                                                <div class="col-3 text-center">
+                                                    {% if service.image %}
+                                                        <img src="{{ service.image.url }}" alt="{{ service.name }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;">
+                                                    {% else %}
+                                                        <i class="fas fa-cut" style="font-size: 2rem; color: #d4af37;"></i>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="col-6">
+                                                    <h6 class="card-title mb-1">{{ service.name }}</h6>
+                                                    {% if service.description %}
+                                                        <p class="text-muted small mb-1">{{ service.description|truncatewords:8 }}</p>
+                                                    {% endif %}
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-clock"></i> {{ service.duration }} دقيقة
+                                                    </small>
+                                                </div>
+                                                <div class="col-3 text-center">
+                                                    <div class="fw-bold" style="color: #d4af37; font-size: 1.2rem;">
+                                                        {{ service.price }} جنيه
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Hidden input for service -->
+                        {{ form.service }}
+                        {% if form.service.errors %}<div class="invalid-feedback d-block">{{ form.service.errors.as_text }}</div>{% endif %}
+                    </div>
+                    
+                    <!-- التاريخ والوقت -->
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <h6 class="mb-2" style="color: #333; font-weight: 600;">
+                                <i class="fas fa-calendar-alt" style="color: #d4af37; margin-right: 8px;"></i>
+                                تاريخ الحجز الجديد
+                            </h6>
+                            {{ form.booking_date }}
+                            <small class="form-text text-muted mt-1">
+                                <i class="fas fa-info-circle"></i> يمكنك الحجز لمدة تصل إلى 3 أشهر مقدماً
+                            </small>
+                            {% if form.booking_date.errors %}<div class="invalid-feedback d-block">{{ form.booking_date.errors.as_text }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <h6 class="mb-2" style="color: #333; font-weight: 600;">
+                                <i class="fas fa-clock" style="color: #d4af37; margin-right: 8px;"></i>
+                                وقت الحجز الجديد
+                            </h6>
+                            {{ form.booking_time }}
+                            <small class="form-text text-muted mt-1">
+                                <i class="fas fa-info-circle"></i> أوقات العمل: من 8:00 صباحاً حتى 10:00 مساءً
+                            </small>
+                            {% if form.booking_time.errors %}<div class="invalid-feedback d-block">{{ form.booking_time.errors.as_text }}</div>{% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- الملاحظات -->
+                    <div class="mb-4">
+                        <h6 class="mb-2" style="color: #333; font-weight: 600;">
+                            <i class="fas fa-sticky-note" style="color: #d4af37; margin-right: 8px;"></i>
+                            ملاحظات إضافية
+                            <small class="text-muted fw-normal">(اختياري)</small>
+                        </h6>
+                        {{ form.notes }}
+                        {% if form.notes.errors %}<div class="invalid-feedback d-block">{{ form.notes.errors.as_text }}</div>{% endif %}
+                    </div>
+                    
+                    <!-- أزرار الحفظ والإلغاء -->
+                    <div class="text-center">
+                        <button type="submit" style="background: #d4af37; color: #333; border: none; padding: 15px 40px; border-radius: 25px; font-weight: 600; font-size: 1.1rem; margin-right: 10px;">
+                            <i class="fas fa-save"></i> حفظ التعديلات
+                        </button>
+                        <a href="{% url 'bookings:list' %}" style="background: #6c757d; color: white; border: none; padding: 15px 40px; border-radius: 25px; font-weight: 600; font-size: 1.1rem; text-decoration: none;">
+                            <i class="fas fa-times"></i> إلغاء
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Card selection logic
+    function handleSelection(containerId, targetInputId) {
+        const container = document.getElementById(containerId);
+        const targetInput = document.getElementById(targetInputId);
+        
+        if (!container || !targetInput) return;
+        
+        // Set initial selection
+        const currentValue = targetInput.value;
+        if (currentValue) {
+            const currentCard = container.querySelector(`[data-value="${currentValue}"]`);
+            if (currentCard) {
+                currentCard.classList.add('selected');
+            }
+        }
+        
+        // Handle card clicks
+        container.addEventListener('click', function(e) {
+            const card = e.target.closest('.selection-card');
+            if (card) {
+                // Remove selection from all cards
+                container.querySelectorAll('.selection-card').forEach(c => c.classList.remove('selected'));
+                
+                // Add selection to clicked card
+                card.classList.add('selected');
+                
+                // Update hidden input
+                targetInput.value = card.dataset.value;
+            }
+        });
+    }
+    
+    // Initialize service selection
+    handleSelection('service-selection', 'id_service');
+});
+</script>
+
+<style>
+.selection-card {
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.selection-card:hover {
+    border-color: #d4af37;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.selection-card.selected {
+    border-color: #d4af37;
+    background-color: #fffbf0;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+}
+
+.selection-card .card-body {
+    padding: 20px;
+}
+
+#id_service {
+    display: none;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,345 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}{{ site_settings.site_name }} - {{ site_settings.site_description }}{% endblock %}
+
+{% block content %}
+<style>
+    .testimonial-card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    .testimonial-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    }
+    .testimonial-content {
+        margin-bottom: 20px;
+    }
+    .testimonial-content .fa-quote-left {
+        font-size: 2rem;
+        color: #d4af37;
+        margin-bottom: 15px;
+    }
+    .testimonial-author {
+        display: flex;
+        align-items: center;
+    }
+    .rating-stars .fa-star {
+        color: #ffc107;
+    }
+</style>
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center min-vh-100">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <h1 class="hero-title">{{ site_settings.hero_title }}</h1>
+                    <p class="hero-subtitle">{{ site_settings.hero_subtitle }}</p>
+                    <div class="hero-buttons">
+                        <a href="{% url 'barbershops:list' %}" class="btn btn-primary btn-lg">تصفح الصالونات واحجز</a>
+                        <a href="#about" class="btn btn-outline-light btn-lg">تعرف علينا</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="about-section py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center mb-5">
+                <h2 class="section-title">عنا</h2>
+                <p class="section-subtitle">تعرف على قصتنا وخبرتنا في عالم الحلاقة</p>
+            </div>
+        </div>
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="about-content">
+                    <h3>{{ site_settings.about_title }}</h3>
+                    <p>{{ site_settings.about_description }}</p>
+                    {% if features %}
+                        <ul class="about-features">
+                            {% for feature in features %}
+                                <li><i class="{{ feature.icon }}"></i> {{ feature.title }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="about-images-container">
+                    <!-- Main large image -->
+                    <div class="main-image mb-3">
+                        {% if site_settings.about_image_1 %}
+                            <img src="{{ site_settings.about_image_1.url }}" alt="{{ site_settings.about_image_1_alt }}" class="img-fluid rounded shadow-sm" style="width: 100%; height: 300px; object-fit: cover;">
+                        {% else %}
+                            <img src="{% static 'images/default-barbershop.jpg' %}" alt="صورة افتراضية" class="img-fluid rounded shadow-sm" style="width: 100%; height: 300px; object-fit: cover;">
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Two smaller images side by side -->
+                    <div class="row g-3">
+                        <div class="col-6">
+                            {% if site_settings.about_image_2 %}
+                                <img src="{{ site_settings.about_image_2.url }}" alt="{{ site_settings.about_image_2_alt }}" class="img-fluid rounded shadow-sm" style="width: 100%; height: 180px; object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'images/default-barbershop.jpg' %}" alt="صورة افتراضية" class="img-fluid rounded shadow-sm" style="width: 100%; height: 180px; object-fit: cover;">
+                            {% endif %}
+                        </div>
+                        <div class="col-6">
+                            {% if site_settings.about_image_3 %}
+                                <img src="{{ site_settings.about_image_3.url }}" alt="{{ site_settings.about_image_3_alt }}" class="img-fluid rounded shadow-sm" style="width: 100%; height: 180px; object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'images/default-barbershop.jpg' %}" alt="صورة افتراضية" class="img-fluid rounded shadow-sm" style="width: 100%; height: 180px; object-fit: cover;">
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<!-- Testimonials Section -->
+<section class="testimonials-section py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center mb-5">
+                <h2 class="section-title">آراء عملائنا</h2>
+                <p class="section-subtitle">ماذا يقول عملاؤنا عن خدماتنا</p>
+            </div>
+        </div>
+        <div class="row">
+            {% if testimonials %}
+                {% for testimonial in testimonials %}
+                    <div class="col-lg-4 mb-4">
+                        <div class="testimonial-card">
+                            <div class="testimonial-content">
+                                <i class="fas fa-quote-left"></i>
+                                <p>{{ testimonial.testimonial_text }}</p>
+                            </div>
+                            <div class="testimonial-author">
+                                {% if testimonial.customer_image %}
+                                    <img src="{{ testimonial.customer_image.url }}" alt="{{ testimonial.customer_name }}" class="rounded-circle me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                                {% endif %}
+                                <div class="author-info">
+                                    <h5>{{ testimonial.customer_name }}</h5>
+                                    {% if testimonial.position %}
+                                        <small class="text-muted">{{ testimonial.position }}</small>
+                                    {% endif %}
+                                    <div class="rating-stars">
+                                        {% for i in "12345" %}
+                                            <i class="fas fa-star{% if forloop.counter > testimonial.rating %}-o{% endif %}"></i>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% elif reviews %}
+                {% for review in reviews %}
+                    <div class="col-lg-4 mb-4">
+                        <div class="testimonial-card">
+                            <div class="testimonial-content">
+                                <i class="fas fa-quote-left"></i>
+                                <p>{{ review.comment }}</p>
+                            </div>
+                            <div class="testimonial-author">
+                                <div class="author-info">
+                                    <h5>{{ review.customer.username }}</h5>
+                                    <div class="rating-stars">
+                                        {% for i in "12345" %}
+                                            <i class="fas fa-star{% if forloop.counter > review.rating %}-o{% endif %}"></i>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center">
+                    <p>لا توجد تقييمات لعرضها حاليًا.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section class="contact-section py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center mb-5">
+                <h2 class="section-title">تواصل معنا</h2>
+                <p class="section-subtitle">نحن هنا لخدمتك في أي وقت</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="contact-card text-center">
+                    <div class="contact-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h5>العنوان</h5>
+                    <p>{{ site_settings.address }}</p>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="contact-card text-center">
+                    <div class="contact-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <h5>الهاتف</h5>
+                    <p>{{ site_settings.phone_number }}</p>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="contact-card text-center">
+                    <div class="contact-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h5>ساعات العمل</h5>
+                    <p>{{ site_settings.working_hours }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="footer-brand">
+                    <h3>{{ site_settings.site_name }}</h3>
+                    <p>{{ site_settings.site_description }}</p>
+                </div>
+            </div>
+            <div class="col-lg-2 mb-4">
+                <div class="footer-links">
+                    <h5>روابط سريعة</h5>
+                    <ul>
+                        <li><a href="#about">عنا</a></li>
+                        <li><a href="#booking-form">الخدمات</a></li>
+                        <li><a href="{% url 'barbershops:list' %}">احجز موعد</a></li>
+                        <li><a href="{% url 'accounts:login' %}">تسجيل الدخول</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-3 mb-4">
+                <div class="footer-contact">
+                    <h5>معلومات الاتصال</h5>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> {{ site_settings.address }}</li>
+                        <li><i class="fas fa-phone"></i> {{ site_settings.phone_number }}</li>
+                        <li><i class="fas fa-envelope"></i> {{ site_settings.email }}</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-3 mb-4">
+                <div class="footer-social">
+                    <h5>تابعنا</h5>
+                    <div class="social-links">
+                        {% if site_settings.facebook_url %}
+                            <a href="{{ site_settings.facebook_url }}" class="social-link" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                        {% endif %}
+                        {% if site_settings.instagram_url %}
+                            <a href="{{ site_settings.instagram_url }}" class="social-link" target="_blank"><i class="fab fa-instagram"></i></a>
+                        {% endif %}
+                        {% if site_settings.twitter_url %}
+                            <a href="{{ site_settings.twitter_url }}" class="social-link" target="_blank"><i class="fab fa-twitter"></i></a>
+                        {% endif %}
+                        {% if site_settings.whatsapp_number %}
+                            <a href="https://wa.me/{{ site_settings.whatsapp_number }}" class="social-link" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr class="footer-divider">
+        <div class="text-center">
+            <p class="footer-copyright">
+                &copy; 2024 {{ site_settings.site_name }}. جميع الحقوق محفوظة.
+            </p>
+        </div>
+    </div>
+</footer>
+
+<script>
+// Form handling and interactions
+document.addEventListener('DOMContentLoaded', function() {
+    // Set date constraints
+    const dateInput = document.querySelector('input[type="date"]');
+    if (dateInput) {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('min', today);
+        
+        const maxDate = new Date();
+        maxDate.setMonth(maxDate.getMonth() + 3);
+        dateInput.setAttribute('max', maxDate.toISOString().split('T')[0]);
+    }
+    
+    // Set time constraints
+    const timeInput = document.querySelector('input[type="time"]');
+    if (timeInput) {
+        timeInput.setAttribute('min', '08:00');
+        timeInput.setAttribute('max', '22:00');
+    }
+    
+    // Form submission
+    const form = document.getElementById('bookingForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Simple validation
+            const requiredFields = form.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+            
+            if (isValid) {
+                alert('تم استلام طلب الحجز بنجاح! سنتواصل معك قريباً.');
+                form.reset();
+            } else {
+                alert('يرجى ملء جميع الحقول المطلوبة');
+            }
+        });
+    }
+});
+
+// Smooth scrolling
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

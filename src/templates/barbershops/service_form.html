@@ -1,0 +1,104 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if object %}
+        تعديل خدمة: {{ object.name }}
+    {% else %}
+        إضافة خدمة جديدة
+    {% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+{% endblock %}
+
+{% block content %}
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+{% endif %}
+
+{% if form.non_field_errors %}
+  <div class="alert alert-danger">
+    {% for error in form.non_field_errors %}
+      <div>{{ error }}</div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div class="form-header">
+    <div class="container">
+        <h1>
+            {% if object %}
+                تعديل خدمة: {{ object.name }}
+            {% else %}
+                إضافة خدمة جديدة لـ "{{ barbershop.name }}"
+            {% endif %}
+        </h1>
+        <p>إدارة الخدمات التي يقدمها محل الحلاقة</p>
+    </div>
+</div>
+
+<div class="form-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="form-container">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="form-group">
+                            <label for="{{ form.name.id_for_label }}" class="form-label">اسم الخدمة <span class="required">*</span></label>
+                            {{ form.name }}
+                            {% if form.name.help_text %}<div class="help-text">{{ form.name.help_text }}</div>{% endif %}
+                            {% for error in form.name.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="{{ form.image.id_for_label }}" class="form-label">صورة الخدمة</label>
+                            {{ form.image }}
+                            {% if form.image.help_text %}<div class="help-text">{{ form.image.help_text }}</div>{% endif %}
+                            {% for error in form.image.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">الوصف <span class="required">*</span></label>
+                            {{ form.description }}
+                            {% if form.description.help_text %}<div class="help-text">{{ form.description.help_text }}</div>{% endif %}
+                            {% for error in form.description.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.price.id_for_label }}" class="form-label">السعر <span class="required">*</span></label>
+                                    {{ form.price }}
+                                    {% if form.price.help_text %}<div class="help-text">{{ form.price.help_text }}</div>{% endif %}
+                                    {% for error in form.price.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.duration.id_for_label }}" class="form-label">المدة (بالدقائق) <span class="required">*</span></label>
+                                    {{ form.duration }}
+                                    {% if form.duration.help_text %}<div class="help-text">{{ form.duration.help_text }}</div>{% endif %}
+                                    {% for error in form.duration.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn-submit">حفظ الخدمة</button>
+                            <a href="{% url 'barbershops:service_list' barbershop.pk %}" class="btn-cancel">إلغاء</a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
