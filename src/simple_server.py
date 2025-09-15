@@ -25,22 +25,41 @@ class SimpleHandler(BaseHTTPRequestHandler):
         self.wfile.write(json.dumps(response, indent=2).encode())
 
 def main():
-    port = int(os.environ.get('PORT', 8000))
+    print(f"=== SIMPLE SERVER STARTING ===", flush=True)
+    print(f"Python executable: {sys.executable}", flush=True)
+    print(f"Python version: {sys.version}", flush=True)
+    print(f"Current directory: {os.getcwd()}", flush=True)
+    print(f"Files in current directory: {os.listdir('.')}", flush=True)
     
-    print(f"=== SIMPLE SERVER STARTING ===")
-    print(f"Python: {sys.version}")
-    print(f"Port: {port}")
-    print(f"Directory: {os.getcwd()}")
-    print(f"Environment PORT: {os.environ.get('PORT', 'NOT SET')}")
-    
-    server = HTTPServer(('0.0.0.0', port), SimpleHandler)
-    print(f"Server running on http://0.0.0.0:{port}")
+    # Check environment variables
+    port_env = os.environ.get('PORT')
+    print(f"Environment PORT variable: {port_env}", flush=True)
+    print(f"All environment variables: {dict(os.environ)}", flush=True)
     
     try:
+        port = int(port_env) if port_env else 8000
+        print(f"Using port: {port}", flush=True)
+    except (ValueError, TypeError) as e:
+        print(f"Error parsing PORT: {e}", flush=True)
+        port = 8000
+        print(f"Falling back to default port: {port}", flush=True)
+    
+    try:
+        print(f"Creating HTTPServer on 0.0.0.0:{port}", flush=True)
+        server = HTTPServer(('0.0.0.0', port), SimpleHandler)
+        print(f"HTTPServer created successfully", flush=True)
+        print(f"Server address: {server.server_address}", flush=True)
+        print(f"Starting server...", flush=True)
         server.serve_forever()
+    except Exception as e:
+        print(f"Server error: {e}", flush=True)
+        import traceback
+        traceback.print_exc()
+        return 1
     except KeyboardInterrupt:
-        print("Server stopped")
+        print("Server stopped by KeyboardInterrupt", flush=True)
         server.shutdown()
+        return 0
 
 if __name__ == '__main__':
     main()
