@@ -1,0 +1,46 @@
+<div class="barbershop-card">
+    <a href="{% url 'barbershops:detail' barbershop.pk %}" class="barbershop-card-image-link">
+        {% if barbershop.image %}
+            <img src="{{ barbershop.image.url }}" alt="{{ barbershop.name }}" class="barbershop-card-image">
+        {% else %}
+            <div class="barbershop-card-placeholder">
+                <i class="fas fa-store"></i>
+            </div>
+        {% endif %}
+    </a>
+    <div class="barbershop-card-body">
+        <h3 class="barbershop-card-title">{{ barbershop.name }}</h3>
+        
+        <div class="barbershop-card-info">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>{{ barbershop.address|truncatechars:50 }}</span>
+        </div>
+        
+        <div class="barbershop-card-rating">
+            <div class="stars">
+                {% for i in "12345" %}
+                    {% if forloop.counter <= barbershop.average_rating|default:0 %}
+                        <i class="fas fa-star"></i>
+                    {% else %}
+                        <i class="far fa-star"></i>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <span class="review-count">({{ barbershop.total_reviews|default:0 }} تقييم)</span>
+        </div>
+        
+        <div class="barbershop-card-info">
+            <i class="fas fa-clock"></i>
+            <span>{{ barbershop.opening_time }} - {{ barbershop.closing_time }}</span>
+        </div>
+        
+        <div class="barbershop-card-actions">
+            <a href="{% url 'barbershops:detail' barbershop.pk %}" class="btn-barbershop-primary">
+                عرض التفاصيل
+            </a>
+            <a href="{% url 'reviews:create' barbershop.pk %}" class="btn-barbershop-secondary" title="إضافة تقييم">
+                <i class="fas fa-star"></i>
+            </a>
+        </div>
+    </div>
+</div>

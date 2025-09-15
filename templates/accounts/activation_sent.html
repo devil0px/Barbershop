@@ -1,0 +1,183 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}تم إرسال رابط التفعيل{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+<style>
+    .activation-card {
+        max-width: 500px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        padding: 40px;
+        text-align: center;
+    }
+    .activation-icon {
+        font-size: 4rem;
+        color: #28a745;
+        margin-bottom: 20px;
+    }
+    .activation-title {
+        color: #333;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+    .activation-text {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 30px;
+    }
+    .activation-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 30px;
+    }
+    .btn-activation {
+        display: inline-block;
+        padding: 16px 30px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1rem;
+        text-align: center;
+        min-width: 180px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: none;
+        outline: none;
+        position: relative;
+        overflow: hidden;
+    }
+    .btn-activation:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.3);
+    }
+    .btn-primary-activation {
+        background: linear-gradient(135deg, #d4af37 0%, #f4d03f 50%, #d4af37 100%);
+        color: white !important;
+        border: 2px solid #d4af37;
+        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+    }
+    .btn-primary-activation:hover {
+        background: linear-gradient(135deg, #b8941f 0%, #d4af37 50%, #b8941f 100%);
+        border-color: #b8941f;
+        color: white !important;
+        text-decoration: none;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+    }
+    .btn-secondary-activation {
+        background: white;
+        color: #6c757d !important;
+        border: 2px solid #e0e0e0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .btn-secondary-activation:hover {
+        background: #f8f9fa;
+        color: #495057 !important;
+        border-color: #d4af37;
+        text-decoration: none;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="activation-card">
+        <div class="activation-icon">
+            <i class="fas fa-envelope-circle-check"></i>
+        </div>
+        
+        <h2 class="activation-title">تم إرسال رابط التفعيل!</h2>
+        
+        <div class="activation-text">
+            <p>تم إرسال رابط تفعيل الحساب إلى بريدك الإلكتروني.</p>
+            <p>يرجى فحص صندوق الوارد (وصندوق الرسائل غير المرغوب ��يها) والنقر على رابط التفعيل.</p>
+            <p><strong>ملاحظة:</strong> رابط التفعيل صالح لمدة 24 ساعة فقط.</p>
+        </div>
+        
+        <div class="activation-actions">
+            <a href="{% url 'accounts:activate_code' %}" class="btn-activation btn-primary-activation">
+                <i class="fas fa-keyboard me-2"></i>
+                أدخل كود التفعيل
+            </a>
+            <a href="{% url 'accounts:resend_activation' %}" class="btn-activation btn-secondary-activation">
+                <i class="fas fa-redo me-2"></i>
+                إعادة الإرسال
+            </a>
+        </div>
+        
+        <div class="mt-4">
+            <p class="text-muted small">
+                <i class="fas fa-info-circle me-1"></i>
+                إذا لم تستلم الإيميل خلال بضع دقائق، تحقق من مجلد الرسائل غير المرغوب فيها
+            </p>
+        </div>
+        
+        <div class="auth-links mt-4">
+            <p><a href="{% url 'home:index' %}">العودة إلى الصفحة الرئيسية</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // تحسين تفاعل الأزرار
+    const activationButtons = document.querySelectorAll('.btn-activation');
+    
+    activationButtons.forEach(button => {
+        // إضافة تأثير النقر
+        button.addEventListener('click', function(e) {
+            // التأكد من أن الرابط يعمل
+            const href = this.getAttribute('href');
+            if (href && href !== '#') {
+                // إضافة تأثير بصري عند النقر
+                this.style.transform = 'translateY(0px)';
+                setTimeout(() => {
+                    window.location.href = href;
+                }, 100);
+            }
+        });
+        
+        // إضافة تأثيرات الماوس
+        button.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        button.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0px)';
+        });
+        
+        // إضافة دعم لوحة المفاتيح
+        button.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                this.click();
+            }
+        });
+    });
+    
+    // إضافة رسالة تأكيد لإعادة الإرسال
+    const resendButton = document.querySelector('a[href*="resend-activation"]');
+    if (resendButton) {
+        resendButton.addEventListener('click', function(e) {
+            const confirmed = confirm('هل تريد إعادة إرسال كود التفعيل؟');
+            if (!confirmed) {
+                e.preventDefault();
+            }
+        });
+    }
+    
+    console.log('Activation page loaded successfully');
+});
+</script>
+{% endblock %}

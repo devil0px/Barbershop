@@ -1,0 +1,52 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}محلات الحلاقة - Barber Shop{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/barbershops.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="barbershop-hero">
+    <div class="container">
+        {% if user.is_authenticated and user.user_type == 'customer' %}
+            <h1>مرحباً {{ user.get_full_name|default:user.username }}!</h1>
+            <p class="lead">اختر محل الحلاقة المفضل لديك واحجز موعدك</p>
+        {% else %}
+            <h1>محلات الحلاقة</h1>
+            <p class="lead">اكتشف أفضل محلات الحلاقة في المدينة</p>
+        {% endif %}
+        
+        {% if user.is_authenticated and user.user_type == 'customer' %}
+            <div class="mt-4">
+                <a href="{% url 'bookings:list' %}" class="btn btn-outline-light btn-lg me-2">
+                    <i class="fas fa-calendar-alt me-2"></i> حجوزاتي
+                </a>
+                <a href="{% url 'accounts:customer_dashboard' %}" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-user-circle me-2"></i> حسابي
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container py-5">
+    {% if barbershops %}
+        <div class="row">
+            {% for barbershop in barbershops %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    {% include 'barbershops/_barbershop_card.html' with barbershop=barbershop %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-barbershops">
+            <i class="fas fa-store-slash"></i>
+            <h3>لا توجد محلات حلاقة متاحة حالياً</h3>
+            <p>تحقق مرة أخرى لاحقاً أو تواصل معنا للمزيد من المعلومات</p>
+            <a href="{% url 'home:index' %}" class="btn btn-primary mt-3">العودة للصفحة الرئيسية</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

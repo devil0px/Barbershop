@@ -1,0 +1,169 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}حجوزات المحل - Barber Shop{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/bookings.css' %}">
+<style>
+    .date-separator {
+        position: relative;
+        margin: 2rem 0;
+    }
+    
+    .date-separator hr {
+        border: none;
+        height: 2px;
+        background: linear-gradient(to right, transparent, #dee2e6, transparent);
+        margin: 0;
+    }
+    
+    .date-badge {
+        background: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 25px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border: 2px solid #dee2e6;
+    }
+    
+    .date-badge.today {
+        border-color: #0d6efd;
+        background: linear-gradient(135deg, #0d6efd, #6610f2);
+        color: white;
+    }
+    
+    .date-badge.past {
+        border-color: #6c757d;
+        background: #6c757d;
+        color: white;
+    }
+    
+    .booking-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .booking-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="page-header">
+        <h1>حجوزات المحل</h1>
+        <p>إدارة جميع الحجوزات في محلك</p>
+    </div>
+
+    <!-- Dashboard Stats -->
+    <div class="row mb-4">
+        <div class="col-md-6 mb-3">
+            <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="card-body text-center text-white py-4">
+                    <div class="d-flex align-items-center justify-content-center mb-3">
+                        <i class="fas fa-user-clock me-2" style="color: #ffd700; font-size: 1.5rem;"></i>
+                        <h5 class="card-title mb-0 fw-bold">الدور الحالي</h5>
+                    </div>
+                    <div class="badge bg-light text-dark fs-3 fw-bold px-4 py-3" id="current-turn-number" style="border-radius: 25px; font-size: 2rem !important;">
+                        {% if current_turn_number %}
+                            #{{ current_turn_number }}
+                        {% else %}
+                            --
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card text-center bg-success text-white h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-check-circle me-2"></i> الحجوزات المنجزة اليوم</h5>
+                    <p class="card-text display-4 fw-bold" id="finished-bookings-count">{{ finished_bookings_count }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">قائمة الحجوزات</h2>
+        <a href="{% url 'accounts:dashboard' %}" class="btn btn-secondary">العودة للوحة التحكم</a>
+    </div>
+
+    <!-- Bookings grouped by date -->
+    {% if bookings_by_date %}
+        {% for date, bookings in bookings_by_date.items %}
+            <div class="mb-4">
+                <!-- Date Header with separator line -->
+                <div class="date-separator d-flex align-items-center mb-4">
+                    <div class="flex-grow-1">
+                        <hr class="my-0">
+                    </div>
+                    <div class="px-3">
+                        {% if date == today %}
+                            <div class="date-badge today">
+                                <i class="fas fa-sun me-2"></i>
+                                <strong>اليوم - {{ date|date:"d/m/Y" }}</strong>
+                                <small class="d-block">{{ bookings|length }} حجز</small>
+                            </div>
+                        {% elif date < today %}
+                            <div class="date-badge past">
+                                <i class="fas fa-history me-2"></i>
+                                <strong>{{ date|date:"d/m/Y" }}</strong>
+                                <small class="d-block">{{ bookings|length }} حجز</small>
+                            </div>
+                        {% else %}
+                            <div class="date-badge">
+                                <i class="fas fa-calendar me-2 text-primary"></i>
+                                <strong>{{ date|date:"d/m/Y" }}</strong>
+                                <small class="d-block text-muted">{{ bookings|length }} حجز</small>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="flex-grow-1">
+                        <hr class="my-0">
+                    </div>
+                </div>
+
+                <!-- Bookings for this date -->
+                <div class="row">
+                    {% for booking in bookings %}
+                        {% include 'bookings/partials/_booking_card_merchant.html' with booking=booking %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+            <h4>لا توجد أي حجوزات حتى الآن.</h4>
+            <p class="text-muted">ستظهر الحجوزات هنا عند إنشائها من قبل العملاء.</p>
+        </div>
+    {% endif %}
+</div>
+<!-- RealTime WebSocket Integration -->
+<script>
+    // تأكد من وجود متغير barbershopId في السياق
+    const barbershopId = "{{ barbershop.id }}";
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+    const wsUrl = `${protocol}://${window.location.host}/ws/barbershop/${barbershopId}/`;
+
+    const turnSocket = new WebSocket(wsUrl);
+
+    turnSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        if (data.current_turn_number !== undefined) {
+            document.getElementById('current-turn-number').innerText = data.current_turn_number ?? '--';
+        }
+        if (data.finished_bookings_count !== undefined) {
+            document.getElementById('finished-bookings-count').innerText = data.finished_bookings_count ?? '0';
+        }
+        // تحديث لحظي: إعادة تحميل الصفحة عند أي تحديث WebSocket
+        location.reload();
+    };
+
+    turnSocket.onclose = function(e) {
+        console.error('WebSocket closed unexpectedly');
+    };
+</script>
+{% endblock %}

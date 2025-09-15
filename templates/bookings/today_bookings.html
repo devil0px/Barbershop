@@ -1,0 +1,212 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}حجوزات اليوم{% endblock %}
+
+{% block content %}
+<style>
+    .today-header {
+        background: linear-gradient(135deg, #2c3e50, #3498db);
+        color: white;
+        padding: 60px 0;
+        text-align: center;
+    }
+
+    .stats-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .stat-label {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .stat-pending .stat-number { color: #f39c12; }
+    .stat-confirmed .stat-number { color: #3498db; }
+    .stat-completed .stat-number { color: #27ae60; }
+    .stat-cancelled .stat-number { color: #e74c3c; }
+
+    .booking-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+    }
+
+    .timeline-item {
+        padding: 20px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .timeline-item:last-child {
+        border-bottom: none;
+    }
+
+    .timeline-time {
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 1.1rem;
+    }
+
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    .status-pending { background: #fff3cd; color: #856404; }
+    .status-confirmed { background: #d1edff; color: #0c5460; }
+    .status-completed { background: #d4edda; color: #155724; }
+    .status-cancelled { background: #f8d7da; color: #721c24; }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 0;
+        color: #7f8c8d;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        opacity: 0.5;
+    }
+</style>
+
+<div class="today-header">
+    <div class="container">
+        <h1>حجوزات اليوم</h1>
+        <div style="font-size: 1.2rem; margin-top: 10px;">{{ today|date:"l, d F Y" }}</div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <!-- إحصائيات اليوم -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stats-card stat-pending">
+                <div class="stat-number">{{ pending_count|default:0 }}</div>
+                <div class="stat-label">في الانتظار</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card stat-confirmed">
+                <div class="stat-number">{{ confirmed_count|default:0 }}</div>
+                <div class="stat-label">مؤكدة</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card stat-completed">
+                <div class="stat-number">{{ completed_count|default:0 }}</div>
+                <div class="stat-label">مكتملة</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card stat-cancelled">
+                <div class="stat-number">{{ cancelled_count|default:0 }}</div>
+                <div class="stat-label">ملغية</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- أزرار الإجراءات السريعة -->
+    <div class="text-center mb-4">
+        <a href="{% url 'accounts:dashboard' %}" class="btn btn-outline-primary me-2">
+            <i class="fas fa-list"></i> جميع الحجوزات
+        </a>
+        <a href="{% url 'bookings:search' %}" class="btn btn-outline-secondary me-2">
+            <i class="fas fa-search"></i> البحث والتصفية
+        </a>
+        <button class="btn btn-outline-success" onclick="location.reload()">
+            <i class="fas fa-sync"></i> تحديث
+        </button>
+    </div>
+
+    <!-- قائمة الحجوزات -->
+    <div class="booking-card">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3>جدول اليوم</h3>
+            <span class="badge bg-primary">{{ bookings|length }} حجز</span>
+        </div>
+
+        {% if bookings %}
+            {% for booking in bookings %}
+                <div class="timeline-item">
+                    <div class="row align-items-center">
+                        <div class="col-md-2">
+                            <div class="timeline-time">{{ booking.booking_time|time:"H:i" }}</div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="fw-bold">
+                                {% if booking.customer %}
+                                    {{ booking.customer.get_full_name|default:booking.customer.username }}
+                                {% else %}
+                                    {{ booking.customer_name }}
+                                {% endif %}
+                            </div>
+                            <div class="text-muted small">
+                                <i class="fas fa-phone"></i> 
+                                {% if booking.customer %}
+                                    {{ booking.customer.phone_number|default:"غير محدد" }}
+                                {% else %}
+                                    {{ booking.customer_phone }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div><i class="fas fa-cut"></i> {{ booking.service.name }}</div>
+                            <div class="text-muted small">{{ booking.service.duration }} دقيقة - {{ booking.total_price }} جنيه</div>
+                        </div>
+                        <div class="col-md-2">
+                            <span class="status-badge status-{{ booking.status }}">
+                                {{ booking.get_status_display }}
+                            </span>
+                        </div>
+                        <div class="col-md-1">
+                            <a href="{% url 'bookings:merchant_detail' booking.pk %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    {% if booking.notes %}
+                        <div class="mt-2 ms-3">
+                            <small class="text-muted">
+                                <i class="fas fa-sticky-note"></i> {{ booking.notes }}
+                            </small>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <h4>لا توجد حجوزات اليوم</h4>
+                <p>استمتع بيوم هادئ!</p>
+                <a href="{% url 'barbershops:my_list' %}" class="btn btn-primary">
+                    <i class="fas fa-store"></i> إدارة محلاتي
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

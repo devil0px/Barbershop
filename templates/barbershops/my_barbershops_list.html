@@ -1,0 +1,63 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}إدارة المحلات - لوحة تحكم التاجر{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/management.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-3">
+            {% include 'accounts/merchant_dashboard_sidebar.html' %}
+        </div>
+        <div class="col-lg-9">
+            <div class="management-header">
+                <h1>إدارة محلاتي</h1>
+                <a href="{% url 'barbershops:create' %}" class="btn-add-new">
+                    <i class="fas fa-plus"></i> إضافة محل جديد
+                </a>
+            </div>
+            
+            <div class="row">
+                {% for barbershop in barbershops %}
+                    <div class="col-md-6 mb-4">
+                        <div class="management-card">
+                            {% if barbershop.image %}
+                                <img src="{{ barbershop.image.url }}" class="management-card-image" alt="{{ barbershop.name }}">
+                            {% else %}
+                                <div class="barbershop-card-placeholder management-card-image">
+                                    <i class="fas fa-store"></i>
+                                </div>
+                            {% endif %}
+                            <div class="management-card-body">
+                                <h5 class="management-card-title">
+                                    <a href="{% url 'barbershops:detail' barbershop.pk %}">{{ barbershop.name }}</a>
+                                </h5>
+                                <p class="management-card-text">{{ barbershop.address|truncatechars:60 }}</p>
+                                <div class="management-card-actions">
+                                    <a href="{% url 'barbershops:service_list' barbershop.pk %}" class="btn btn-sm btn-outline-primary">إدارة الخدمات</a>
+                                    <a href="{% url 'barbershops:edit' barbershop.pk %}" class="btn btn-sm btn-outline-secondary">تعديل المحل</a>
+                                    <a href="{% url 'reviews:barbershop_reviews' barbershop.pk %}" class="btn btn-sm btn-outline-info">التقييمات</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12">
+                        <div class="no-results-alert">
+                            <h4>لم تقم بإضافة أي محلات حلاقة بعد</h4>
+                            <p>ابدأ بإضافة محلك الأول لإدارته من هنا.</p>
+                            <a href="{% url 'barbershops:create' %}" class="btn-add-new">
+                                <i class="fas fa-plus"></i> أضف محلك الأول الآن
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,408 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}إنشاء حساب جديد{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+<style>
+.google-oauth-btn {
+    width: 100%;
+    padding: 12px;
+    background: rgba(66, 133, 244, 0.9);
+    border: 2px solid rgba(66, 133, 244, 0.3);
+    border-radius: 10px;
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin-bottom: 15px;
+    backdrop-filter: blur(10px);
+}
+
+.google-oauth-btn:hover {
+    background: rgba(66, 133, 244, 1);
+    border-color: rgba(66, 133, 244, 0.5);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+}
+
+.auth-divider {
+    position: relative;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.auth-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #ddd;
+}
+
+.auth-divider span {
+    background: white;
+    padding: 0 15px;
+    color: #666;
+    position: relative;
+}
+
+.user-type-selection {
+    margin-bottom: 20px;
+}
+
+.user-type-card {
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+.user-type-card:hover {
+    border-color: #d4af37;
+    background-color: rgba(212, 175, 55, 0.1);
+}
+
+.auth-form-input {
+    color: white !important; /* Set input text color to white */
+}
+
+.user-type-card.selected {
+    border-color: #d4af37;
+    background-color: rgba(212, 175, 55, 0.3);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+    transform: scale(1.02);
+}
+
+.user-type-card input[type="radio"] {
+    display: none;
+}
+
+.user-type-card .icon {
+    font-size: 2rem;
+    color: #d4af37;
+    margin-bottom: 10px;
+}
+
+.user-type-card .title {
+    font-weight: 600;
+    color: #000000;
+    margin-bottom: 5px;
+}
+
+.user-type-card .description {
+    color: #666;
+    font-size: 0.9rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<style>
+  .form-control,
+  .form-control:focus {
+    color: #000 !important;
+  }
+</style>
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-logo">
+            <h2>Barber Shop</h2>
+            <p>إنشاء حساب جديد</p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                        <p class="mb-0">{{ error }}</p>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Google Sign-Up Button -->
+        {% load socialaccount %}
+        {% get_providers as socialaccount_providers %}
+        {% if socialaccount_providers %}
+            {% for provider in socialaccount_providers %}
+                {% if provider.id == "google" and forloop.first %}
+                    <div class="social-login-section">
+                        <a href="{% provider_login_url 'google' process='signup' %}" class="social-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24">
+                                <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                            </svg>
+                            التسجيل باستخدام Google
+                        </a>
+                        
+                        <div class="auth-divider">
+                            <span>أو</span>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" id="registerForm" class="auth-form">
+            {% csrf_token %}
+            
+            <!-- اختيار نوع المستخدم -->
+            <div class="user-type-selection">
+                <label class="auth-form-label">{{ form.user_type.label }}</label>
+                {% for radio in form.user_type %}
+                <div class="user-type-card" data-type="{{ radio.choice_value }}">
+                    {{ radio.tag }}
+                    <div class="icon">
+                        {% if radio.choice_value == 'customer' %}
+                            <i class="fas fa-user"></i>
+                        {% elif radio.choice_value == 'barber' %}
+                            <i class="fas fa-cut"></i>
+                        {% endif %}
+                    </div>
+                    <div class="title">{{ radio.choice_label }}</div>
+                    <div class="description">
+                        {% if radio.choice_value == 'customer' %}
+                            احجز مواعيد وقيم الخدمات
+                        {% elif radio.choice_value == 'barber' %}
+                            أدر محلك واستقبل الحجوزات
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+                {% if form.user_type.errors %}<div class="auth-error">{{ form.user_type.errors|striptags }}</div>{% endif %}
+            </div>
+
+            <!-- الحقول الأساسية -->
+            <div class="auth-form-group">
+                <label for="{{ form.username.id_for_label }}" class="auth-form-label">{{ form.username.label }}</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-user-circle input-icon"></i>
+                    <input type="text" name="username" id="id_username" class="auth-form-input" placeholder="أدخل اسم المستخدم" required>
+                </div>
+                {% if form.username.errors %}<div class="auth-error">{{ form.username.errors|striptags }}</div>{% endif %}
+            </div>
+
+            <div class="auth-form-group">
+                <label for="{{ form.email.id_for_label }}" class="auth-form-label">{{ form.email.label }}</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" name="email" id="id_email" class="auth-form-input" placeholder="أدخل البريد الإلكتروني" required>
+                </div>
+                {% if form.email.errors %}<div class="auth-error">{{ form.email.errors|striptags }}</div>{% endif %}
+            </div>
+
+            <div class="auth-form-group">
+                <label for="{{ form.phone_number.id_for_label }}" class="auth-form-label">{{ form.phone_number.label }}</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-phone input-icon"></i>
+                    <input type="tel" name="phone_number" id="id_phone_number" class="auth-form-input" placeholder="أدخل رقم الهاتف" required>
+                </div>
+                {% if form.phone_number.errors %}<div class="auth-error">{{ form.phone_number.errors|striptags }}</div>{% endif %}
+            </div>
+
+            <!-- حقول كلمة المرور -->
+            <div class="auth-form-group">
+                <label for="{{ form.password1.id_for_label }}" class="auth-form-label">{{ form.password1.label }}</label>
+                <div class="password-input-container">
+                    <input type="password" name="password1" id="id_password1" class="auth-form-input password-input" placeholder="أدخل كلمة المرور" required>
+                    <button class="password-toggle-btn" type="button" data-target="id_password1">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                {% if form.password1.errors %}<div class="auth-error">{{ form.password1.errors|striptags }}</div>{% endif %}
+            </div>
+
+            <div class="auth-form-group">
+                <label for="{{ form.password2.id_for_label }}" class="auth-form-label">{{ form.password2.label }}</label>
+                <div class="password-input-container">
+                    <input type="password" name="password2" id="id_password2" class="auth-form-input password-input" placeholder="أعد إدخال كلمة المرور" required>
+                    <button class="password-toggle-btn" type="button" data-target="id_password2">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                {% if form.password2.errors %}<div class="auth-error">{{ form.password2.errors|striptags }}</div>{% endif %}
+            </div>
+
+
+
+            <button type="submit" class="auth-btn">
+                <i class="fas fa-user-plus me-2"></i>
+                إنشاء الحساب
+            </button>
+        </form>
+
+        <div class="auth-links mt-3">
+            <p class="text-center">لديك حساب بالفعل؟ <a href="{% url 'accounts:login' %}" class="fw-bold">تسجيل الدخول</a></p>
+            <p class="text-center"><a href="{% url 'home:index' %}" class="text-muted"><i class="fas fa-arrow-right me-1"></i>العودة إلى الصفحة الرئيسية</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Main JavaScript for Register Page
+document.addEventListener('DOMContentLoaded', function() {
+    // User Type Selection
+    const userTypeCards = document.querySelectorAll('.user-type-card');
+    const userTypeRadios = document.querySelectorAll('input[name="user_type"]');
+    
+    userTypeCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const radioInput = this.querySelector('input[type="radio"]');
+            if (radioInput) {
+                radioInput.checked = true;
+                
+                // Update visual selection
+                userTypeCards.forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+            }
+        });
+    });
+    
+    // Password Toggle Functionality
+    const passwordToggles = document.querySelectorAll('.password-toggle-btn');
+    passwordToggles.forEach(toggle => {
+        toggle.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const passwordInput = document.getElementById(targetId);
+            const icon = this.querySelector('i');
+            
+            if (passwordInput && icon) {
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            }
+        });
+    });
+    
+    // Password Matching Validation
+    const password1 = document.getElementById('id_password1');
+    const password2 = document.getElementById('id_password2');
+    
+    function checkPasswordMatch() {
+        if (password1.value && password2.value) {
+            if (password1.value !== password2.value) {
+                password2.setCustomValidity('كلمات المرور غير متطابقة');
+                password2.classList.add('is-invalid');
+            } else {
+                password2.setCustomValidity('');
+                password2.classList.remove('is-invalid');
+                password2.classList.add('is-valid');
+            }
+        }
+    }
+    
+    if (password1 && password2) {
+        password1.addEventListener('input', checkPasswordMatch);
+        password2.addEventListener('input', checkPasswordMatch);
+    }
+    
+    // Form Validation
+    const registerForm = document.getElementById('registerForm');
+    if (registerForm) {
+        registerForm.addEventListener('submit', function(e) {
+            // Check if user type is selected
+            const userTypeSelected = document.querySelector('input[name="user_type"]:checked');
+            if (!userTypeSelected) {
+                e.preventDefault();
+                alert('الرجاء اختيار نوع الحساب');
+                return;
+            }
+            
+            // Check terms agreement
+            const termsAgree = document.getElementById('terms_agree');
+
+            
+            // Check password match
+            if (password1.value !== password2.value) {
+                e.preventDefault();
+                alert('كلمات المرور غير متطابقة');
+                return;
+            }
+        });
+    }
+    
+    // Phone Number Formatting
+    const phoneInput = document.getElementById('id_phone');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 0) {
+                if (value.startsWith('966')) {
+                    value = '+' + value;
+                } else if (value.startsWith('05')) {
+                    value = '+966' + value.substring(1);
+                } else if (value.startsWith('5')) {
+                    value = '+966' + value;
+                }
+            }
+            e.target.value = value;
+        });
+    }
+    
+    // Email Validation
+    const emailInput = document.getElementById('id_email');
+    if (emailInput) {
+        emailInput.addEventListener('blur', function() {
+            const email = this.value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (email && !emailRegex.test(email)) {
+                this.setCustomValidity('الرجاء إدخال بريد إلكتروني صحيح');
+                this.classList.add('is-invalid');
+            } else {
+                this.setCustomValidity('');
+                this.classList.remove('is-invalid');
+                if (email) this.classList.add('is-valid');
+            }
+        });
+    }
+    
+    // Set initial selection for user type
+    const checkedRadio = document.querySelector('input[name="user_type"]:checked');
+    if (checkedRadio) {
+        const parentCard = checkedRadio.closest('.user-type-card');
+        if (parentCard) {
+            parentCard.classList.add('selected');
+        }
+    }
+    
+    // Focus on first input
+    const firstNameInput = document.getElementById('id_first_name');
+    if (firstNameInput) {
+        firstNameInput.focus();
+    }
+});
+</script>
+{% endblock %}

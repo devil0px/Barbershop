@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -179,3 +180,27 @@ logs/
 PRIVATE_BACKUP_*.txt
 *.backup
 *.bak
+=======
+# Secrets
+.env
+
+# Django
+db.sqlite3
+ngrok.exe
+.ngrok.exe.old
+*.log
+
+# Python
+__pycache__/
+*.pyc
+
+# Static files
+staticfiles/
+media/
+
+# IDE / OS files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+>>>>>>> eb0a0dc1152f52687a39c643193460d5aa501fb3

@@ -1,0 +1,290 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load socialaccount %}
+
+{% block title %}تسجيل الدخول{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+<style>
+    .google-one-tap-container {
+        margin: 20px 0;
+        text-align: center;
+    }
+    .google-signin-btn {
+        margin: 10px 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    #g_id_onload {
+        position: fixed;
+        top: 100px;
+        right: 30px;
+        z-index: 1000;
+    }
+    .auth-methods {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    .google-section {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+    .google-section h4 {
+        color: #4285f4;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Google One Tap Sign-In -->
+<div id="g_id_onload"
+     data-client_id="{{ GOOGLE_CLIENT_ID }}"
+     data-callback="handleCredentialResponse"
+     data-auto_prompt="true"
+     data-cancel_on_tap_outside="false">
+</div>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-logo">
+            <h2>💈 Barber Shop</h2>
+            <p>تسجيل الدخول إلى حسابك</p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Google Sign-In Section -->
+        <div class="google-section">
+            <h4>🚀 تسجيل دخول سريع</h4>
+            
+            <!-- Google One Tap Button -->
+            <div class="google-one-tap-container">
+                <div id="g_id_signin"
+                     data-type="standard"
+                     data-size="large"
+                     data-theme="outline"
+                     data-text="signin_with"
+                     data-shape="rectangular"
+                     data-logo_alignment="left">
+                </div>
+            </div>
+            
+            <!-- Traditional Google Sign-In -->
+            <a href="{% provider_login_url 'google' %}" class="social-btn">
+                <i class="fab fa-google me-2"></i>
+                تسجيل الدخول باستخدام Google
+            </a>
+        </div>
+
+        <div class="auth-divider">
+            <span>أو استخدم البريد الإلكتروني</span>
+        </div>
+
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                        <p class="mb-0">{{ error }}</p>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            
+            <div class="auth-form-group">
+                <label for="id_username" class="auth-form-label">اسم المستخدم أو البريد الإلكتروني</label>
+                <input type="text" class="auth-form-input" id="id_username" name="username" 
+                       placeholder="أدخل اسم المستخدم أو البريد الإلكتروني" required>
+            </div>
+
+            <div class="auth-form-group">
+                <label for="id_password" class="auth-form-label">كلمة المرور</label>
+                <div class="password-input-container">
+                    <input type="password" class="auth-form-input" id="id_password" name="password" 
+                           placeholder="أدخل كلمة المرور" required>
+                    <button type="button" class="password-toggle" id="togglePassword">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="auth-form-group">
+                <label class="checkbox-container">
+                    <input type="checkbox" name="remember_me">
+                    <span class="checkmark"></span>
+                    تذكرني
+                </label>
+            </div>
+
+            <button type="submit" class="auth-btn">
+                <i class="fas fa-sign-in-alt me-2"></i>
+                تسجيل الدخول
+            </button>
+        </form>
+
+        <div class="auth-links mt-3">
+            <p>ليس لديك حساب؟ <a href="{% url 'accounts:register' %}">إنشاء حساب جديد</a></p>
+            <p><a href="#" onclick="showForgotPassword()">نسيت كلمة المرور؟</a></p>
+            <p><a href="{% url 'home:index' %}">العودة إلى الصفحة الرئيسية</a></p>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999;">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 10px; text-align: center;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">جاري التحميل...</span>
+        </div>
+        <p class="mt-2">جاري تسجيل الدخول...</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Google Identity Services -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<script>
+// Google One Tap Sign-In Handler
+function handleCredentialResponse(response) {
+    console.log("Google One Tap response received");
+    
+    // Show loading
+    document.getElementById('loadingOverlay').style.display = 'block';
+    
+    // Send credential to server
+    fetch('{% url "accounts:google_one_tap" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: 'credential=' + response.credential
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('loadingOverlay').style.display = 'none';
+        
+        if (data.success) {
+            // Show success message
+            showMessage('success', data.message || 'تم تسجيل الدخول بنجاح!');
+            
+            // Redirect after short delay
+            setTimeout(() => {
+                window.location.href = data.redirect_url || '/';
+            }, 1000);
+        } else {
+            showMessage('error', data.error || 'فشل في تسجيل الدخول');
+        }
+    })
+    .catch(error => {
+        document.getElementById('loadingOverlay').style.display = 'none';
+        console.error('Error:', error);
+        showMessage('error', 'حدث خطأ في تسجيل الدخول');
+    });
+}
+
+// Initialize Google One Tap
+window.onload = function () {
+    if (typeof google !== 'undefined' && google.accounts) {
+        google.accounts.id.initialize({
+            client_id: "{{ GOOGLE_CLIENT_ID }}",
+            callback: handleCredentialResponse,
+            auto_select: false,
+            cancel_on_tap_outside: false
+        });
+        
+        // Render the sign-in button
+        google.accounts.id.renderButton(
+            document.getElementById("g_id_signin"),
+            {
+                theme: "outline",
+                size: "large",
+                text: "signin_with",
+                shape: "rectangular",
+                logo_alignment: "left"
+            }
+        );
+        
+        // Show One Tap prompt if user is not authenticated
+        {% if not user.is_authenticated %}
+        google.accounts.id.prompt((notification) => {
+            console.log('One Tap prompt:', notification);
+        });
+        {% endif %}
+    }
+};
+
+// Utility functions
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function showMessage(type, message) {
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const alertHtml = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    // Insert at the top of the auth card
+    const authCard = document.querySelector('.auth-card');
+    const authLogo = document.querySelector('.auth-logo');
+    authLogo.insertAdjacentHTML('afterend', alertHtml);
+}
+
+// Traditional form functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto focus on username field
+    document.getElementById('id_username').focus();
+
+    // Show/hide password functionality
+    const togglePassword = document.querySelector('#togglePassword');
+    const password = document.querySelector('#id_password');
+
+    if (togglePassword) {
+        togglePassword.addEventListener('click', function () {
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            
+            this.querySelector('i').classList.toggle('fa-eye');
+            this.querySelector('i').classList.toggle('fa-eye-slash');
+        });
+    }
+});
+
+function showForgotPassword() {
+    alert('ميزة استعادة كلمة المرور ستكون متاحة قريباً');
+}
+</script>
+{% endblock %}

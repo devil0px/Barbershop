@@ -1,0 +1,236 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}إضافة محل حلاقة - Barber Shop{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.css" />
+
+<style>
+    #map {
+        height: 400px;
+        width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="form-container">
+                <div class="form-header">
+                    <h2><i class="fas fa-plus-circle"></i> إضافة محل حلاقة جديد</h2>
+                    <p>املأ البيانات التالية لإضافة محل الحلاقة الخاص بك</p>
+                </div>
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    {{ form.non_field_errors }}
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ form.name.id_for_label }}" class="form-label">اسم المحل <span class="required">*</span></label>
+                                {{ form.name }}
+                                {{ form.name.errors }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ form.phone_number.id_for_label }}" class="form-label">رقم الهاتف <span class="required">*</span></label>
+                                {{ form.phone_number }}
+                                {{ form.phone_number.errors }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">وصف المحل <span class="required">*</span></label>
+                        {{ form.description }}
+                        {{ form.description.errors }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.address.id_for_label }}" class="form-label">العنوان <span class="required">*</span></label>
+                        {{ form.address }}
+                        {{ form.address.errors }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.image.id_for_label }}" class="form-label">صورة المحل</label>
+                        {{ form.image }}
+                        {{ form.image.errors }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">حدد الموقع على الخريطة <span class="required">*</span></label>
+                        <div id="map"></div>
+                        <div style="display:none;">
+                            {{ form.latitude }}
+                            {{ form.longitude }}
+                        </div>
+                        {{ form.latitude.errors }}
+                        {{ form.longitude.errors }}
+                        <div id="coordinate-display" class="mt-2 text-muted"></div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ form.opening_time.id_for_label }}" class="form-label">وقت بدء العمل <span class="required">*</span></label>
+                                {{ form.opening_time }}
+                                {{ form.opening_time.errors }}
+                                <div class="help-text">وقت بدء العمل اليومي</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="{{ form.closing_time.id_for_label }}" class="form-label">وقت انتهاء العمل <span class="required">*</span></label>
+                                {{ form.closing_time }}
+                                {{ form.closing_time.errors }}
+                                <div class="help-text">وقت انتهاء العمل اليومي</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-buttons">
+                        <button type="submit" class="btn-submit"><i class="fas fa-plus"></i> إضافة محل الحلاقة</button>
+                        <a href="{% url 'accounts:barber_dashboard' %}" class="btn-cancel"><i class="fas fa-times"></i> إلغاء</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol/dist/L.Control.Locate.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM fully loaded and parsed');
+
+        const defaultLat = 30.0444; // Cairo latitude
+        const defaultLng = 31.2357; // Cairo longitude
+        const defaultZoom = 6;      // Zoom level to show Egypt
+
+       const map = L.map('map').setView([defaultLat, defaultLng], defaultZoom);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+        
+        const marker = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(map);
+        
+        function updateCoordinates(lat, lng) {
+            const latInput = document.getElementById('id_latitude');
+            const lngInput = document.getElementById('id_longitude');
+            const display = document.getElementById('coordinate-display');
+            
+            if(latInput && lngInput) {
+                latInput.value = lat.toFixed(6);
+                lngInput.value = lng.toFixed(6);
+            }
+            if(display) {
+                display.innerHTML = `خط العرض: ${lat.toFixed(4)}, خط الطول: ${lng.toFixed(4)}`;
+            }
+        }
+
+        map.on('click', function(e) {
+            const lat = e.latlng.lat;
+            const lng = e.latlng.lng;
+            
+            marker.setLatLng([lat, lng]);
+            updateCoordinates(lat, lng);
+        });
+        
+        marker.on('dragend', function(e) {
+            const lat = e.target.getLatLng().lat;
+            const lng = e.target.getLatLng().lng;
+            
+            updateCoordinates(lat, lng);
+        });
+        
+        const locationControl = L.control({position: 'topright'});
+        locationControl.onAdd = function(map) {
+            const div = L.DomUtil.create('div', 'leaflet-control-custom');
+            div.innerHTML = `
+                <button type="button" onclick="getCurrentLocation()" style="
+                    background: white; 
+                    border: 2px solid #ccc; 
+                    border-radius: 4px; 
+                    padding: 8px; 
+                    cursor: pointer;
+                    font-size: 16px;
+                " title="موقعي الحالي">
+                    <i class="fas fa-crosshairs"></i>
+                </button>
+            `;
+            return div;
+        };
+        locationControl.addTo(map);
+        
+        window.getCurrentLocation = function() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        
+                        map.setView([lat, lng], 15);
+                        marker.setLatLng([lat, lng]);
+                        updateCoordinates(lat, lng);
+                    },
+                    function(error) {
+                        console.error('Geolocation error:', error);
+                        alert('لا يمكن الحصول على موقعك الحالي');
+                    }
+                );
+            } else {
+                alert('المتصفح لا يدعم تحديد الموقع الجغرافي');
+            }
+        };
+        
+        console.log('Map initialized successfully!');
+        
+        updateCoordinates(defaultLat, defaultLng);
+        
+        function addCoordinateTestButton() {
+            const coordinateDisplay = document.getElementById('coordinate-display');
+            if (coordinateDisplay) {
+                const testButton = document.createElement('button');
+                testButton.type = 'button';
+                testButton.className = 'btn btn-info btn-sm';
+                testButton.innerHTML = '<i class="fas fa-search"></i> اختبار حالة الإحداثيات';
+                testButton.style.margin = '10px 0';
+                
+                testButton.onclick = function() {
+                    const latInput = document.getElementById('id_latitude');
+                    const lngInput = document.getElementById('id_longitude');
+                    
+                    console.log('=== COORDINATE TEST ===');
+                    console.log('Lat field:', latInput);
+                    console.log('Lon field:', lngInput);
+                    console.log('Lat value:', latInput ? latInput.value : 'NOT FOUND');
+                    console.log('Lon value:', lngInput ? lngInput.value : 'NOT FOUND');
+                    
+                    alert(`حالة الإحداثيات:\nخط العرض: ${latInput ? latInput.value : 'غير موجود'}\nخط الطول: ${lngInput ? lngInput.value : 'غير موجود'}`);
+                };
+                
+                coordinateDisplay.appendChild(testButton);
+            }
+        }
+        
+        addCoordinateTestButton();
+    });
+</script>
+{% endblock %}

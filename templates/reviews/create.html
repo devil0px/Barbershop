@@ -1,0 +1,126 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}إضافة تقييم - {{ barbershop.name }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+<style>
+    .rating-input {
+        text-align: center;
+        margin: 20px 0;
+        font-size: 2rem;
+    }
+    .rating-input input[type="radio"] {
+        display: none;
+    }
+    .rating-input label {
+        color: #ddd;
+        cursor: pointer;
+        margin: 0 5px;
+        transition: color 0.2s ease;
+    }
+    .rating-input label:hover,
+    .rating-input input[type="radio"]:checked ~ label,
+    .rating-input label.active {
+        color: #ffc107;
+    }
+    .barbershop-info {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <div class="form-header">
+            <h1>إضافة تقييم جديد</h1>
+            <p class="text-muted">شارك تجربتك مع المحل لمساعدة الآخرين</p>
+        </div>
+
+        <div class="barbershop-info">
+            <h4>{{ barbershop.name }}</h4>
+            <p class="text-muted mb-0">{{ barbershop.address }}</p>
+        </div>
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label class="form-label">التقييم *</label>
+                <div class="rating-input">
+                    <input type="radio" name="rating" value="1" id="star1" required>
+                    <label for="star1">★</label>
+                    
+                    <input type="radio" name="rating" value="2" id="star2">
+                    <label for="star2">★</label>
+                    
+                    <input type="radio" name="rating" value="3" id="star3">
+                    <label for="star3">★</label>
+                    
+                    <input type="radio" name="rating" value="4" id="star4">
+                    <label for="star4">★</label>
+                    
+                    <input type="radio" name="rating" value="5" id="star5">
+                    <label for="star5">★</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="comment" class="form-label">التعليق *</label>
+                <textarea class="form-control" id="comment" name="comment" rows="5" placeholder="شارك تجربتك مع هذا المحل..." required></textarea>
+            </div>
+                    
+            <div class="form-buttons">
+                <button type="submit" class="btn btn-primary">إرسال التقييم</button>
+                <a href="{% url 'barbershops:detail' barbershop.pk %}" class="btn btn-secondary">إلغاء</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const stars = document.querySelectorAll('.rating-input label');
+    const inputs = document.querySelectorAll('.rating-input input');
+    
+    stars.forEach((star, index) => {
+        star.addEventListener('click', function() {
+            // Reset all stars
+            stars.forEach(s => s.style.color = '#ddd');
+            
+            // Highlight selected stars
+            for (let i = 0; i <= index; i++) {
+                stars[i].style.color = '#d4af37';
+            }
+        });
+        
+        star.addEventListener('mouseover', function() {
+            // Highlight on hover
+            stars.forEach(s => s.style.color = '#ddd');
+            for (let i = 0; i <= index; i++) {
+                stars[i].style.color = '#d4af37';
+            }
+        });
+    });
+    
+    // Reset on mouse leave
+    document.querySelector('.rating-input').addEventListener('mouseleave', function() {
+        const checkedInput = document.querySelector('.rating-input input:checked');
+        stars.forEach(s => s.style.color = '#ddd');
+        
+        if (checkedInput) {
+            const checkedIndex = Array.from(inputs).indexOf(checkedInput);
+            for (let i = 0; i <= checkedIndex; i++) {
+                stars[i].style.color = '#d4af37';
+            }
+        }
+    });
+});
+</script>
+{% endblock %}
