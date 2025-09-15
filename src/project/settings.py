@@ -37,7 +37,7 @@ if os.path.exists(env_file_path):
 SECRET_KEY = env('SECRET_KEY', default='django-insecure-wp94mum&0-pt@k+edv-p^s443ky9rly6qp70n@q95rzu7wbi09')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool('DEBUG', default=False)
+DEBUG = env.bool('DEBUG', default=True)
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[
     'localhost',
@@ -49,11 +49,12 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[
 
 
 # Proxy and Cookie Settings for Production
-if not DEBUG:
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    SECURE_SSL_REDIRECT = True
+# Temporarily disabled for debugging
+# if not DEBUG:
+#     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+#     SESSION_COOKIE_SECURE = True
+#     CSRF_COOKIE_SECURE = True
+#     SECURE_SSL_REDIRECT = True
 
 # Application definition
 
