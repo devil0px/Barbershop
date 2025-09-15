@@ -1,0 +1,60 @@
+{
+  "name": "Barbershop Management System",
+  "description": "Django-based barbershop management system with booking, reviews, and real-time notifications",
+  "repository": "https://github.com/devil0px/Barbershop",
+  "keywords": ["django", "barbershop", "booking", "management", "websocket"],
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ],
+  "env": {
+    "DEBUG": {
+      "description": "Debug mode",
+      "value": "False"
+    },
+    "SECRET_KEY": {
+      "description": "Django secret key",
+      "generator": "secret"
+    },
+    "ALLOWED_HOSTS": {
+      "description": "Allowed hosts for Django",
+      "value": ".ondigitalocean.app,localhost,127.0.0.1"
+    },
+    "DATABASE_URL": {
+      "description": "PostgreSQL database URL"
+    },
+    "REDIS_URL": {
+      "description": "Redis URL for caching and channels"
+    },
+    "EMAIL_HOST_USER": {
+      "description": "SMTP email username"
+    },
+    "EMAIL_HOST_PASSWORD": {
+      "description": "SMTP email password"
+    },
+    "GOOGLE_CLIENT_ID": {
+      "description": "Google OAuth client ID"
+    },
+    "GOOGLE_SECRET_KEY": {
+      "description": "Google OAuth secret key"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    },
+    "worker": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "addons": [
+    "heroku-postgresql:mini",
+    "heroku-redis:mini"
+  ],
+  "scripts": {
+    "postdeploy": "cd src && python manage.py migrate && python manage.py collectstatic --noinput"
+  }
+}

@@ -1,0 +1,67 @@
+name: barbershop
+services:
+- name: web
+  source_dir: /
+  github:
+    repo: devil0px/Barbershop
+    branch: main
+    deploy_on_push: true
+  run_command: |
+    cd src && python manage.py collectstatic --noinput && python manage.py migrate && gunicorn project.wsgi:application --bind 0.0.0.0:8080
+  environment_slug: python
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  http_port: 8080
+  routes:
+  - path: /
+  envs:
+  - key: DEBUG
+    value: "False"
+  - key: ALLOWED_HOSTS
+    value: ".ondigitalocean.app,localhost,127.0.0.1"
+  - key: SECRET_KEY
+    scope: RUN_AND_BUILD_TIME
+    type: SECRET
+  - key: DATABASE_URL
+    scope: RUN_AND_BUILD_TIME
+    type: SECRET
+  - key: REDIS_URL
+    scope: RUN_AND_BUILD_TIME
+    type: SECRET
+  - key: EMAIL_HOST_USER
+    scope: RUN_AND_BUILD_TIME
+    type: SECRET
+  - key: EMAIL_HOST_PASSWORD
+    scope: RUN_AND_BUILD_TIME
+    type: SECRET
+  - key: GOOGLE_CLIENT_ID
+    scope: RUN_AND_BUILD_TIME
+    type: SECRET
+  - key: GOOGLE_SECRET_KEY
+    scope: RUN_AND_BUILD_TIME
+    type: SECRET
+
+databases:
+- name: db
+  engine: PG
+  version: "15"
+  size: basic
+
+workers:
+- name: websocket
+  source_dir: /
+  run_command: |
+    cd src && daphne -b 0.0.0.0 -p 8081 project.asgi:application
+  environment_slug: python
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  http_port: 8081
+  envs:
+  - key: DEBUG
+    value: "False"
+  - key: DATABASE_URL
+    scope: RUN_AND_BUILD_TIME
+    type: SECRET
+  - key: REDIS_URL
+    scope: RUN_AND_BUILD_TIME
+    type: SECRET
