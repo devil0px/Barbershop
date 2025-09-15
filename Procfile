@@ -1,2 +1,2 @@
-release: cd src && python manage.py migrate --noinput && python manage.py collectstatic --noinput
-web: cd src && python test_server.py
+release: echo "Skipping release phase for testing"
+web: cd src && python simple_server.py
