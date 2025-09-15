@@ -26,9 +26,8 @@ env = environ.Env(
 
 # Take environment variables from .env file
 env_file_path = os.path.join(BASE_DIR, '.env')
-print(f"Attempting to read .env file from: {env_file_path}")
-print(f"Does .env file exist at this path? {os.path.exists(env_file_path)}")
-env.read_env(env_file_path)
+if os.path.exists(env_file_path):
+    env.read_env(env_file_path)
 
 
 # Quick-start development settings - unsuitable for production
@@ -38,22 +37,23 @@ env.read_env(env_file_path)
 SECRET_KEY = env('SECRET_KEY', default='django-insecure-wp94mum&0-pt@k+edv-p^s443ky9rly6qp70n@q95rzu7wbi09')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# Set to False to enable custom error pages (404, 500, 403)
-# Temporarily set to True to fix media files serving via ngrok
-DEBUG = env.bool('DEBUG', default=True)
+DEBUG = env.bool('DEBUG', default=False)
 
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[
     'localhost',
     '127.0.0.1',
-    '97a8fcc5b22d.ngrok-free.app',
+    '.ondigitalocean.app',
+    '.herokuapp.com',
 ])
 
 
 
-# Proxy and Cookie Settings for Ngrok
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+# Proxy and Cookie Settings for Production
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
 
 # Application definition
 
