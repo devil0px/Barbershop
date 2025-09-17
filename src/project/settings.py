@@ -37,9 +37,15 @@ if os.path.exists(env_file_path):
 SECRET_KEY = env('SECRET_KEY', default='django-insecure-wp94mum&0-pt@k+edv-p^s443ky9rly6qp70n@q95rzu7wbi09')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool('DEBUG', default=True)
+DEBUG = env.bool('DEBUG', default=False)
 
-ALLOWED_HOSTS = ['*']  # Allow all hosts for debugging
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[
+    'localhost',
+    '127.0.0.1',
+    '.herokuapp.com',
+    '.ondigitalocean.app',
+    '.railway.app'
+])
 
 
 
@@ -223,16 +229,15 @@ SIMPLE_JWT = {
 }
 
 # CORS settings
-# For development, we can allow all origins. 
-# In production, you should list your specific frontend domain.
-CORS_ALLOW_ALL_ORIGINS = True
+# Allow all origins only in development
+CORS_ALLOW_ALL_ORIGINS = DEBUG
 
-# CORS_ALLOWED_ORIGINS = env.list('CORS_ORIGIN_WHITELIST', default=[
-#     'http://localhost:8000',
-#     'http://127.0.0.1:8000',
-#     'http://r-praise.gl.at.ply.gg',
-#     'https://r-praise.gl.at.ply.gg',
-# ])
+# Production CORS settings
+if not DEBUG:
+    CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[
+        'https://yourdomain.com',
+        'https://www.yourdomain.com',
+    ])
 
 
 # Static files (CSS, JavaScript, Images)

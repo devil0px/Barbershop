@@ -19,7 +19,7 @@
     },
     "ALLOWED_HOSTS": {
       "description": "Allowed hosts for Django",
-      "value": ".ondigitalocean.app,localhost,127.0.0.1"
+      "value": ".herokuapp.com,.ondigitalocean.app,.railway.app,localhost,127.0.0.1"
     },
     "DATABASE_URL": {
       "description": "PostgreSQL database URL"
