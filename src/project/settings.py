@@ -126,22 +126,24 @@ ASGI_APPLICATION = 'project.asgi.application'
 
 # Use in-memory channel layer for development
 # Channels
-# Use Redis as the channel layer in production, otherwise use in-memory for development
-if 'REDIS_URL' in os.environ:
-    CHANNEL_LAYERS = {
-        'default': {
-            'BACKEND': 'channels_redis.core.RedisChannelLayer',
-            'CONFIG': {
-                "hosts": [env('REDIS_URL')],
-            },
-        },
+# Use InMemory channel layer for simplicity (temporary)
+# For production with multiple workers, consider Redis
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
     }
-else:
-    CHANNEL_LAYERS = {
-        "default": {
-            "BACKEND": "channels.layers.InMemoryChannelLayer"
-        }
-    }
+}
+
+# Uncomment below for Redis when available
+# if 'REDIS_URL' in os.environ:
+#     CHANNEL_LAYERS = {
+#         'default': {
+#             'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#             'CONFIG': {
+#                 "hosts": [env('REDIS_URL')],
+#             },
+#         },
+#     }
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
@@ -157,15 +159,23 @@ LOGOUT_REDIRECT_URL = 'home:index'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-# Use dj-database-url to parse the DATABASE_URL environment variable for production,
-# falling back to SQLite for local development.
-DATABASES = {
-    'default': env.db('DATABASE_URL', default=f'sqlite:///{BASE_DIR / "db.sqlite3"}')
-}
-# Add timeout option, compatible with both SQLite and PostgreSQL
-DATABASES['default']['OPTIONS'] = {
-    'timeout': 20,
-}
+# Use SQLite for both development and production (temporary)
+if env('DATABASE_URL', default=None):
+    # If DATABASE_URL is provided, use it (PostgreSQL)
+    DATABASES = {
+        'default': env.db('DATABASE_URL')
+    }
+else:
+    # Default to SQLite
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+            'OPTIONS': {
+                'timeout': 20,
+            }
+        }
+    }
 
 
 # Password validation
