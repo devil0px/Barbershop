@@ -45,9 +45,8 @@ DEBUG = env.bool('DEBUG', default=True)
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[
     'localhost',
     '127.0.0.1',
-    '97a8fcc5b22d.ngrok-free.app',
+    '.ondigitalocean.app',
 ])
-
 
 
 # Proxy and Cookie Settings for Ngrok
@@ -211,8 +210,7 @@ SECURE_HSTS_PRELOAD = True
 
 # CSRF Settings
 CSRF_TRUSTED_ORIGINS = [
-
-    'https://97a8fcc5b22d.ngrok-free.app',
+    'https://*.ondigitalocean.app',
 ]
   
 # r-praise.gl.at.ply.gg:43458

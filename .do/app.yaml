@@ -7,7 +7,9 @@ services:
     branch: main
     deploy_on_push: true
   run_command: |
-    cd src && python manage.py collectstatic --noinput && python manage.py migrate && gunicorn project.wsgi:application --bind 0.0.0.0:8080
+    python manage.py collectstatic --noinput
+    python manage.py migrate --noinput
+    gunicorn project.wsgi:application --bind 0.0.0.0:$PORT
   environment_slug: python
   instance_count: 1
   instance_size_slug: basic-xxs
@@ -15,31 +17,16 @@ services:
   routes:
   - path: /
   envs:
+  - key: PORT
+    value: "8080"
   - key: DEBUG
     value: "False"
+  - key: SECRET_KEY
+    value: "your-production-secret-key-here"
   - key: ALLOWED_HOSTS
     value: ".ondigitalocean.app,localhost,127.0.0.1"
-  - key: SECRET_KEY
-    scope: RUN_AND_BUILD_TIME
-    type: SECRET
   - key: DATABASE_URL
-    scope: RUN_AND_BUILD_TIME
-    type: SECRET
-  - key: REDIS_URL
-    scope: RUN_AND_BUILD_TIME
-    type: SECRET
-  - key: EMAIL_HOST_USER
-    scope: RUN_AND_BUILD_TIME
-    type: SECRET
-  - key: EMAIL_HOST_PASSWORD
-    scope: RUN_AND_BUILD_TIME
-    type: SECRET
-  - key: GOOGLE_CLIENT_ID
-    scope: RUN_AND_BUILD_TIME
-    type: SECRET
-  - key: GOOGLE_SECRET_KEY
-    scope: RUN_AND_BUILD_TIME
-    type: SECRET
+    value: "${db.DATABASE_URL}"
 
 databases:
 - name: db
@@ -47,21 +34,3 @@ databases:
   version: "15"
   size: basic
 
-workers:
-- name: websocket
-  source_dir: /
-  run_command: |
-    cd src && daphne -b 0.0.0.0 -p 8081 project.asgi:application
-  environment_slug: python
-  instance_count: 1
-  instance_size_slug: basic-xxs
-  http_port: 8081
-  envs:
-  - key: DEBUG
-    value: "False"
-  - key: DATABASE_URL
-    scope: RUN_AND_BUILD_TIME
-    type: SECRET
-  - key: REDIS_URL
-    scope: RUN_AND_BUILD_TIME
-    type: SECRET
