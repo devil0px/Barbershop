@@ -212,10 +212,11 @@ SECURE_HSTS_PRELOAD = True
 
 
 # CSRF Settings
-CSRF_TRUSTED_ORIGINS = [
-
-    'https://97a8fcc5b22d.ngrok-free.app',
-]
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[
+    'https://*.ondigitalocean.app',
+    'https://*.herokuapp.com',
+    'https://*.railway.app',
+])
   
 # r-praise.gl.at.ply.gg:43458
 
