@@ -39,14 +39,7 @@ SECRET_KEY = env('SECRET_KEY', default='django-insecure-wp94mum&0-pt@k+edv-p^s44
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DEBUG', default=True)  # Enable for runserver
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[
-    'localhost',
-    '127.0.0.1',
-    '.herokuapp.com',
-    '.ondigitalocean.app',
-    '.railway.app',
-    '*'  # Temporary for debugging
-])
+ALLOWED_HOSTS = ['*']  # Allow all hosts for simplicity
 
 
 
