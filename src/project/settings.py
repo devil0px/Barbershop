@@ -44,7 +44,8 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[
     '127.0.0.1',
     '.herokuapp.com',
     '.ondigitalocean.app',
-    '.railway.app'
+    '.railway.app',
+    '*'  # Temporary for debugging
 ])
 
 
